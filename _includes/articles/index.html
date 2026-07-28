@@ -1,0 +1,174 @@
+{% comment %}
+  Unified articles list at /articles/.
+  Layout mirrors the portfolio: header → search → filter nav → list.
+  The filter nav reuses the portfolio .cat-filter / .cat-chip component with
+  two chip groups: category (data-cat, shared initCategoryFilter + activeCat
+  search integration) and tag (data-tag-chip, initTagChips fills the search
+  box to grep). initCatDeepLink adds ?cat= deep-linking.
+{% endcomment %}
+{% assign articles = site.articles %}
+{% assign multi = site.data.categories.size | minus: 1 %}
+
+{% comment %} Collect distinct tags across all articles. {% endcomment %}
+{% assign all_tags = '' | split: '' %}
+{% for a in articles %}
+  {% if a.nested %}{% continue %}{% endif %}
+  {% for t in a.tags %}
+    {% unless all_tags contains t %}{% assign all_tags = all_tags | push: t %}{% endunless %}
+  {% endfor %}
+{% endfor %}
+{% assign all_tags = all_tags | sort %}
+
+<div class="articles-wrapper">
+  <header class="articles-header" data-reveal>
+    <span class="section-eyebrow mono no-select">// ARTICLES</span>
+    <h1 class="articles-title">Articles<span class="title-prompt">_</span></h1>
+    <p class="articles-subtitle">Notes, writeups &amp; technical deep-dives.</p>
+    <div class="articles-meta mono no-select">
+      <span><span class="dot"></span> {{ articles.size }}</span>
+      <span class="meta-sep">/</span>
+      <span>STATUS: OPEN</span>
+    </div>
+  </header>
+
+  {% if articles.size > 0 %}
+  {% include common/search.html placeholder="grep articles…" total=articles.size list_id="articles-list" item_selector=".article-entry" %}
+
+  {% if multi > 0 or all_tags.size > 0 %}
+  <nav class="cat-filter reveal" data-category-filter
+       data-filter-list="#articles-list"
+       data-filter-item=".article-entry"
+       aria-label="Filter articles">
+    {% if multi > 0 %}
+    <div class="cat-filter__group">
+      <span class="cat-filter__label mono no-select">// FILTER</span>
+      <div class="cat-filter__chips">
+        <button class="cat-chip is-active mono" type="button" data-cat="all">ALL</button>
+        {% for cat in site.data.categories %}
+        <button class="cat-chip mono" type="button" data-cat="{{ cat.slug }}">{{ cat.name | upcase }}</button>
+        {% endfor %}
+      </div>
+    </div>
+    {% endif %}
+    {% if all_tags.size > 0 %}
+    <div class="cat-filter__group">
+      <span class="cat-filter__label mono no-select">// TAG</span>
+      <div class="cat-filter__chips">
+        {% for t in all_tags %}
+        <button class="cat-chip mono" type="button" data-tag-chip="{{ t }}">{{ t | upcase }}</button>
+        {% endfor %}
+      </div>
+    </div>
+    {% endif %}
+  </nav>
+  {% endif %}
+
+  <div class="articles-list" id="articles-list">
+    {% for article in articles %}
+    {% if article.nested %}{% continue %}{% endif %}
+    {% assign cat_data = site.data.categories | where: "slug", article.category | first %}
+    <article class="article-entry reveal" data-category="{{ article.category | default: '' }}" style="transition-delay: {{ forloop.index0 | modulo: 3 | times: 80 }}ms;">
+      <span class="article-entry-index mono no-select">{{ forloop.index | prepend: '00' | slice: -2, 2 }}</span>
+      <div class="article-entry-body">
+        {% if multi > 0 and cat_data %}
+        <span class="article-entry-cat mono no-select">{{ cat_data.name }}</span>
+        {% endif %}
+        <h2 class="article-entry-title"><a class="article-entry-link card-title-link" href="{{ article.url | relative_url }}">{{ article.title }}</a></h2>
+        {% if article.description %}
+        <p class="article-entry-desc">{{ article.description }}</p>
+        {% endif %}
+        {% if article.tags.size > 0 %}
+        <div class="article-entry-tags">
+          {% include common/tag-chips.html tags=article.tags link_base="/articles/?tag=" %}
+        </div>
+        {% endif %}
+      </div>
+      <a class="article-entry-arrow" href="{{ article.url | relative_url }}" aria-label="Open {{ article.title }}"><i class="fas fa-arrow-right"></i></a>
+    </article>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="articles-empty">
+    <p class="mono articles-empty-text">&gt; No entries found. Check back soon<span class="cursor-blink">_</span></p>
+  </div>
+  {% endif %}
+</div>
+
+<style>
+  .articles-wrapper { padding: 2rem 0 4rem; }
+  .articles-header {
+    margin-bottom: 2.5rem;
+    padding: 1.75rem 0 0;
+  }
+  .articles-title {
+    font-family: var(--font-display);
+    font-size: clamp(2.3rem, 6.5vw, 3.8rem);
+    font-weight: 700; letter-spacing: -0.035em;
+    margin: 0 0 0.5rem; line-height: 1;
+  }
+  .articles-subtitle { font-size: 1rem; color: var(--ink-mut); margin: 0 0 0.85rem; }
+  .articles-meta {
+    display: flex; align-items: center; gap: 0.6rem;
+    font-size: 0.62rem; color: var(--ink-faint); letter-spacing: 0.14em;
+  }
+  .articles-meta .dot {
+    display: inline-block; width: 6px; height: 6px;
+    background: var(--phosphor); border-radius: 50%;
+    margin-right: 0.3rem; box-shadow: 0 0 6px var(--phosphor); vertical-align: middle;
+  }
+  .meta-sep { opacity: 0.5; }
+
+  /* .cat-filter / .cat-chip styles are shared from _sass/_projects.scss.
+     Scope-override: stack the filter groups on separate lines (cat row,
+     tag row) within the articles page only — portfolio is unaffected. */
+  .articles-wrapper .cat-filter { flex-direction: column; align-items: stretch; gap: 0.75rem; }
+  .articles-wrapper .cat-filter__group { display: flex; align-items: center; flex-wrap: wrap; gap: 0.6rem 1rem; }
+
+  .articles-list { display: flex; flex-direction: column; }
+  .article-entry, .article-entry:hover {
+    position: relative; display: flex; align-items: flex-start;
+    gap: 1.25rem; padding: 1.4rem 0.5rem;
+    border-bottom: 1px solid color-mix(in srgb, var(--phosphor-soft) 14%, transparent);
+    text-decoration: none;
+    --card-accent: var(--phosphor);
+  }
+  .article-entry:last-child { border-bottom: none; }
+  .article-entry-index {
+    font-size: 0.68rem; color: var(--phosphor); letter-spacing: 0.1em;
+    padding-top: 0.2rem; min-width: 2.5rem; opacity: 0.7;
+    transition: opacity 0.25s var(--ease-out-expo, ease-out);
+  }
+  .article-entry:hover .article-entry-index { opacity: 1; }
+  .article-entry-body { flex: 1; min-width: 0; }
+  .article-entry-cat {
+    display: block; font-size: 0.6rem; color: var(--phosphor-soft);
+    letter-spacing: 0.18em; text-transform: uppercase; margin-bottom: 0.3rem;
+  }
+  .article-entry-title {
+    font-family: var(--font-display);
+    font-size: 1.2rem; font-weight: 700;
+    margin: 0 0 0.35rem; color: var(--ink);
+    letter-spacing: -0.012em; line-height: 1.3;
+  }
+  .article-entry-desc {
+    font-size: 0.88rem; line-height: 1.55; color: var(--ink-mut);
+    margin: 0 0 0.5rem;
+  }
+  .article-entry-tags { display: flex; flex-wrap: wrap; gap: 0.3rem; }
+  .article-entry-arrow {
+    display: inline-flex; align-items: center; padding: 0.3rem 0 2px;
+    font-size: 0.85rem; color: color-mix(in srgb, var(--phosphor) 45%, transparent);
+    text-decoration: none;
+    transition: color 0.3s var(--ease-out-expo, ease-out), transform 0.3s var(--ease-out-expo, ease-out);
+  }
+  .article-entry-arrow:hover { color: var(--phosphor); transform: translateX(4px); }
+
+  .articles-empty { padding: 3rem 0; text-align: center; }
+  .articles-empty-text { font-family: var(--font-mono); font-size: 0.8rem; color: var(--ink-faint); }
+
+  @media (max-width: 576px) {
+    .article-entry { gap: 0.75rem; padding: 1.2rem 0.25rem; }
+    .article-entry-index { min-width: 2rem; font-size: 0.62rem; }
+    .article-entry-title { font-size: 1.05rem; }
+  }
+</style>

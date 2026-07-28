@@ -1,0 +1,225 @@
+// ==========================================================
+// Gallery (carousel) + Lightbox — editorial, token-driven
+// ==========================================================
+
+@use "variables" as *;
+@use "mixins" as *;
+
+// ---- Gallery carousel ----
+.gallery {
+  margin: 2.75rem 0;
+  position: relative;
+}
+
+.gallery-stage {
+  position: relative;
+  overflow: hidden;
+  border-radius: $radius-md;
+  border: 1px solid color-mix(in srgb, var(--ink) 10%, transparent);
+  background: var(--bg-raised);
+  height: clamp(300px, 56vh, 560px);
+  touch-action: pan-y;
+}
+
+.gallery-track {
+  display: flex;
+  height: 100%;
+  transition: transform 0.55s $ease-out-expo;
+  will-change: transform;
+}
+.gallery-track.dragging { transition: none; }
+
+.gallery-slide {
+  min-width: 100%;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  box-sizing: border-box;
+  user-select: none;
+}
+.gallery-slide img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  border-radius: 4px;
+  pointer-events: none;
+  filter: drop-shadow(0 12px 40px rgba(0, 0, 0, 0.45));
+  transition: transform $dur-slow $ease-out-expo;
+}
+
+// Nav arrows — pointer events explicit so they capture clicks cleanly
+.gallery-nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  border: 1px solid color-mix(in srgb, var(--ink) 24%, transparent);
+  background: color-mix(in srgb, var(--bg-void) 62%, transparent);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  color: var(--ink);
+  pointer-events: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.85rem;
+  z-index: 4;
+  opacity: 0.75;
+  transition: opacity $dur-base $ease-out-expo,
+              border-color $dur-fast $ease-out-expo,
+              color $dur-fast $ease-out-expo,
+              background $dur-fast $ease-out-expo;
+}
+.gallery-nav:hover {
+  opacity: 1;
+  border-color: var(--phosphor);
+  color: var(--phosphor);
+  background: color-mix(in srgb, var(--phosphor) 12%, transparent);
+}
+.gallery-nav:focus-visible {
+  outline: none;
+  border-color: var(--phosphor);
+  color: var(--phosphor);
+}
+.gallery-prev { left: 14px; }
+.gallery-next { right: 14px; }
+
+.gallery-counter {
+  position: absolute;
+  top: 12px;
+  right: 16px;
+  z-index: 4;
+  font-size: 0.62rem;
+  letter-spacing: 0.16em;
+  color: var(--ink-mut);
+  padding: 0.3rem 0.6rem;
+  border-radius: 100px;
+  background: color-mix(in srgb, var(--bg-void) 55%, transparent);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+}
+.gallery-sep { opacity: 0.45; margin: 0 0.15rem; }
+
+// Thumbnails
+.gallery-thumbs {
+  display: flex;
+  gap: 10px;
+  margin-top: 12px;
+  overflow-x: auto;
+  padding: 2px 1px 6px;
+  scrollbar-width: thin;
+}
+.gallery-thumb {
+  flex-shrink: 0;
+  width: 86px;
+  height: 58px;
+  border-radius: $radius-sm;
+  border: 1px solid color-mix(in srgb, var(--ink) 14%, transparent);
+  padding: 0;
+  cursor: pointer;
+  overflow: hidden;
+  opacity: 0.5;
+  background: var(--bg-raised);
+  transition: opacity $dur-fast $ease-out-expo, border-color $dur-fast $ease-out-expo;
+  @include focus-ring(14px, 28%);
+}
+.gallery-thumb:hover { opacity: 0.85; }
+.gallery-thumb.active {
+  opacity: 1;
+  border-color: var(--phosphor);
+}
+.gallery-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  display: block;
+}
+.gallery-thumbs::-webkit-scrollbar { height: 6px; }
+.gallery-thumbs::-webkit-scrollbar-track { background: transparent; }
+.gallery-thumbs::-webkit-scrollbar-thumb {
+  background: color-mix(in srgb, var(--ink) 22%, transparent);
+  border-radius: 3px;
+}
+
+// ---- Lightbox ----
+.lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 10002;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(4, 5, 8, 0.94);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.32s $ease-out-expo, visibility 0.32s $ease-out-expo;
+}
+.lightbox.open { opacity: 1; visibility: visible; }
+
+.lightbox-img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  border-radius: $radius-md;
+  transform: scale(0.96);
+  opacity: 0;
+  transition: transform 0.4s $ease-out-expo, opacity 0.3s $ease-out-expo;
+  pointer-events: none;
+}
+.lightbox.open .lightbox-img { transform: scale(1); opacity: 1; }
+
+.lightbox-btn {
+  position: absolute;
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  background: rgba(255, 255, 255, 0.06);
+  color: $ink;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.95rem;
+  transition: background 0.2s $ease-out-expo, border-color 0.2s $ease-out-expo, transform $dur-base $ease-out-expo;
+}
+.lightbox-btn:hover {
+  background: rgba(255, 255, 255, 0.14);
+  border-color: rgba(255, 255, 255, 0.5);
+}
+.lightbox-btn:active { transform: scale(0.94); }
+.lightbox-btn { @include focus-ring(16px, 40%); }
+.lightbox-close { top: 1.25rem; right: 1.25rem; }
+.lightbox-prev { left: 1.25rem; top: 50%; transform: translateY(-50%); }
+.lightbox-next { right: 1.25rem; top: 50%; transform: translateY(-50%); }
+.lightbox-prev:hover, .lightbox-next:hover { transform: translateY(-50%) scale(1.06); }
+
+.lightbox-counter {
+  position: absolute;
+  top: 1.5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: $font-mono;
+  font-size: 0.66rem;
+  letter-spacing: 0.18em;
+  color: rgba($ink, 0.7);
+}
+
+@media (max-width: 576px) {
+  .lightbox-prev { left: 0.5rem; }
+  .lightbox-next { right: 0.5rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .gallery-track { transition: none; }
+  .lightbox { transition: none; }
+  .lightbox-img { transition: none; transform: none; opacity: 1; }
+}

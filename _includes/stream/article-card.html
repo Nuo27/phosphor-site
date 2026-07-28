@@ -1,0 +1,23 @@
+{%- comment -%}
+  Stream card - article. Text-led (no media). Params: article, index (stream position), labels.
+{%- endcomment -%}
+{%- assign a = include.article -%}
+<article class="featured-item featured-item--article reveal{% if include.pool %} rw-item{% endif %}"
+         data-item-type="article"{% if include.pool %} hidden{% endif %}>
+  <div class="fi-meta-rail">
+    <span class="fi-index mono no-select">{{ include.index | prepend: '00' | slice: -2, 2 }}</span>
+  </div>
+  <div class="fi-body">
+    <span class="fi-category fi-category--article mono no-select">// ARTICLE</span>
+    <h3 class="fi-title"><a class="card-title-link" href="{{ a.url | relative_url }}">{{ a.title }}</a></h3>
+    <p class="fi-desc">{{ a.description }}</p>
+    {%- if a.tags and a.tags.size > 0 -%}
+    <div class="fi-tags">
+      {% include common/tag-chips.html tags=a.tags link_base="/articles/?tag=" %}
+    </div>
+    {%- endif -%}
+    <a class="fi-link mono" href="{{ a.url | relative_url }}">
+      {{ include.labels.read_article }} <i class="fas fa-arrow-right"></i>
+    </a>
+  </div>
+</article>

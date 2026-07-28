@@ -1,0 +1,80 @@
+### Site Settings ###
+title               : Your Name
+description         : >-
+                      Your site description. Keep it to 1-2 sentences — appears in
+                      the hero, footer, and SEO meta tags.
+baseurl             : ""
+repository          : your-username/phosphor-site
+
+
+### Author Info ###
+author:
+  name              : Your Name
+  image             : assets/image/bio-photo.png   # replace with your photo (800×800px)
+  location          : Your City, Country
+
+
+### Social Links (rendered by _includes/social.html) ###
+social:
+  - name            : Email
+    icon            : envelope
+    url             : "mailto:you@example.com"
+  - name            : GitHub
+    icon            : github
+    prefix          : fab
+    url             : "https://github.com/your-username"
+  - name            : LinkedIn
+    icon            : linkedin-in
+    prefix          : fab
+    url             : "https://www.linkedin.com/in/your-username"
+
+
+### Collections ###
+collections:
+  projects:
+    output: true
+    permalink: /portfolio/:name
+  articles:
+    output: true
+    permalink: /articles/:name
+
+
+### Defaults for collections ###
+defaults:
+  - scope:
+      path: ""
+      type: "projects"
+    values:
+      layout: "project"
+  - scope:
+      path: ""
+      type: "articles"
+    values:
+      layout: "article"
+
+
+### Portfolio visibility (site-wide defaults) ###
+# accent_tag:  tag name highlighted in accent color on cards/chips (e.g. "Open Source").
+# hidden_*:    tags/categories collapsed behind the SHOW toggle on the portfolio grid.
+# dimmed_*:    tags/categories shown but de-emphasized.
+# Page front matter (pages/projects.md → portfolio:) overrides these per-field.
+portfolio:
+  subtitle: "Your portfolio tagline appears here."
+  accent_tag: ""
+  hidden_tags: []
+  hidden_categories: []
+  dimmed_tags: []
+  dimmed_categories: []
+  hidden_label: "hidden"        # short noun; shown uppercased in the toggle button
+  filter_label: "FILTER"        # the // label over the category chips
+  show_label: "SHOW"            # the // label over the reveal-toggle chips
+
+
+### Exclude from processing ###
+exclude:
+  - README.md
+  - CONTRIBUTING.md
+  - LICENSE
+  - plan.md
+  - "*.log"
+  - integrations/

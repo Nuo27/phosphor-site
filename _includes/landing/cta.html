@@ -1,0 +1,21 @@
+{% if page.cta %}
+  {% assign cta = page.cta %}
+  <!-- ============ Closing CTA ============ -->
+  <section class="mag-cta" data-reveal>
+    <h2 class="cta-heading">{{ cta.heading }}</h2>
+    <div class="cta-actions">
+      {% if cta.primary %}
+        {% assign p = cta.primary.url | split: '#' %}
+        <a class="btn btn-primary-custom" href="{{ p[0] }}"{% if p.size == 2 %} data-scroll-to="{{ p[1] }}"{% endif %} data-magnetic>
+          <span class="btn-bracket no-select">&lt;</span> {{ cta.primary.label }} <span class="btn-bracket no-select">/&gt;</span>
+        </a>
+      {% endif %}
+      {% if cta.secondary %}
+        {% assign s = cta.secondary.url | split: '#' %}
+        <a class="btn btn-secondary-custom" href="{{ s[0] }}"{% if s.size == 2 %} data-scroll-to="{{ s[1] }}"{% endif %} data-magnetic>
+          <span class="btn-prompt no-select">&gt;</span> {{ cta.secondary.label }}
+        </a>
+      {% endif %}
+    </div>
+  </section>
+{% endif %}

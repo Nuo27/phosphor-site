@@ -1,0 +1,14 @@
+{%- comment -%}
+  Reusable section heading: eyebrow + title block.
+  Used across the About page and (with different classes) is paralleled by
+  the landing mag-section-head. Params:
+    eyebrow     -> the "// NN" index label
+    title       -> heading text
+    heading_tag -> h1 | h2 (default h2)
+    prompt      -> render the blinking "_" cursor after the title
+{%- endcomment -%}
+{%- assign heading_tag = include.heading_tag | default: 'h2' -%}
+<div class="section-head">
+  <span class="section-eyebrow mono no-select">// {{ include.eyebrow }}</span>
+  <{{ heading_tag }} class="section-title">{{ include.title }}{% if include.prompt %}<span class="title-prompt">_</span>{% endif %}</{{ heading_tag }}>
+</div>

@@ -1,0 +1,102 @@
+// ==========================================================
+// Footer — terminal status bar
+// ==========================================================
+
+@use "variables" as *;
+@use "mixins" as *;
+
+// Scoped to the page footer (direct child of #smooth-scroll).
+#smooth-scroll > footer {
+  border-top: 1px solid rgba($phosphor, 0.18);
+  background: transparent;
+  position: relative;
+  font-family: $font-mono;
+
+  [data-theme="light"] & { border-top-color: rgba($carbon, 0.18); }
+
+  small {
+    font-family: $font-mono;
+    font-size: 0.68rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: $ink-mut;
+    [data-theme="light"] & { color: $carbon-mut; }
+  }
+
+  small .fa-heart { color: $hazard; }
+  small .fa-code { color: $phosphor; [data-theme="light"] & { color: $print-phosphor; } }
+  small .fa-map-marker-alt { color: $cyan; [data-theme="light"] & { color: $print-cyan; } }
+}
+
+// Social icons — terminal chip style. Hover driven by the resolver's
+// `.is-hover` class (the resolver finds `.social` via HOVER_SEL).
+// All colours via CSS variables (theme-aware via _tokens.scss).
+.social {
+  text-decoration: none !important;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border-radius: $radius-xs !important;
+  border: 1px solid color-mix(in srgb, var(--ink) 14%, transparent);
+  background: var(--bg-surface);
+  transition: transform    $dur-base    $ease-out-back,
+              border-color $dur-lightup $ease-out-expo,
+              background   $dur-lightup $ease-out-expo,
+              color        $dur-lightup $ease-out-expo,
+              box-shadow   $dur-lightup $ease-out-expo;
+
+  @include icon-hover;
+  @include focus-ring(20px, 34%);
+}
+
+// Back to top — HUD button. Hover driven by `.is-hover` (the resolver
+// finds `#backToTop` because it's a <button> in HOVER_SEL).
+.back-to-top {
+  position: fixed;
+  bottom: 1.5rem;
+  right: 1.5rem;
+  width: 44px;
+  height: 44px;
+  border-radius: $radius-xs;
+  background: var(--bg-surface);
+  color: var(--phosphor);
+  border: 1px solid color-mix(in srgb, var(--phosphor) 35%, transparent);
+  cursor: pointer;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(20px);
+  transition: opacity $dur-base $ease-out-expo,
+              transform $dur-base $ease-out-expo,
+              background $dur-fast $ease-out-expo,
+              border-color $dur-fast $ease-out-expo,
+              box-shadow $dur-fast $ease-out-expo;
+  z-index: 100;
+  font-size: 0.85rem;
+
+  &.visible {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+  }
+
+  @include back-to-top-hover;
+  @include focus-ring(22px, 38%);
+}
+
+// Scroll progress — phosphor telemetry bar (driven by smooth-scroll
+// subscription, not by hover state — stays CSS-variable-driven).
+.scroll-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: var(--phosphor);
+  box-shadow: 0 0 10px color-mix(in srgb, var(--phosphor) 60%, transparent);
+  z-index: 9999;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.1s linear;
+}

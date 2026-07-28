@@ -1,0 +1,15 @@
+{% assign s = page.languages %}
+{% if s %}
+<section class="reveal mb-5">
+  {% include common/section-head.html eyebrow=s.eyebrow title=s.title %}
+  <div class="languages-grid">
+    {% for lang in s.items %}
+      <div class="language-item reveal{% if forloop.index0 >= 1 %} reveal-delay-{{ forloop.index0 }}{% endif %}">
+        <span class="language-name">{{ lang.name }}</span>
+        <span class="language-level">{{ lang.level }}</span>
+      </div>
+    {% endfor %}
+  </div>
+  {% if s.note %}<p class="languages-note mono">{{ s.note }}</p>{% endif %}
+</section>
+{% endif %}

@@ -1,0 +1,407 @@
+// ==========================================================
+// Markdown body — the single source for rendered prose.
+// Applied to .markdown-body (article + project detail pages).
+// Fully token-driven so both themes resolve without overrides;
+// _theme.scss no longer re-declares these.
+// ==========================================================
+
+@use "variables" as *;
+@use "mixins" as *;
+
+.markdown-body {
+  color: var(--ink);
+
+  // ---- Headings: editorial display, never the global uppercase shell ----
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-display);
+    text-transform: none;
+    letter-spacing: -0.02em;
+    color: var(--ink);
+    margin-top: 2.25rem;
+    margin-bottom: 1rem;
+    line-height: 1.2;
+  }
+  h1 { font-size: 1.75rem; margin-top: 32px; }
+  h2 { font-size: 1.5rem; }
+  h3 { font-size: 1.2rem; margin-top: 2rem; }
+  h4 { font-size: 1rem; }
+  h5 { font-size: 0.95rem; color: var(--ink-mut); }
+  h6 { font-size: 0.85rem; color: var(--ink-faint); text-transform: uppercase; letter-spacing: 0.08em; }
+
+  // ---- Inline emphasis ----
+  strong, b {
+    font-weight: 700;
+    color: var(--ink);
+  }
+  em, i { font-style: italic; }
+  del, s {
+    text-decoration: line-through;
+    color: var(--ink-faint);
+    opacity: 0.85;
+  }
+
+  // ---- Highlight (replaces browser yellow) ----
+  mark {
+    background: color-mix(in srgb, var(--phosphor) 25%, transparent);
+    color: var(--ink);
+    padding: 0.05em 0.3em;
+    border-radius: var(--radius-xs);
+  }
+
+  // ---- Keyboard keys ----
+  kbd {
+    font-family: var(--font-mono);
+    font-size: 0.85em;
+    background: var(--bg-raised);
+    border: 1px solid color-mix(in srgb, var(--ink) 22%, transparent);
+    border-bottom-width: 2px;
+    border-radius: var(--radius-xs);
+    padding: 0.1em 0.4em;
+    color: var(--phosphor-bright);
+    line-height: 1;
+  }
+
+  // ---- Abbreviations ----
+  abbr[title] {
+    text-decoration: underline dotted;
+    text-decoration-color: var(--phosphor-soft);
+    text-underline-offset: 2px;
+    cursor: help;
+  }
+
+  // ---- Definition lists ----
+  dl { margin: 1.25rem 0; }
+  dt {
+    font-family: var(--font-display);
+    font-weight: 600;
+    color: var(--phosphor-bright);
+    margin-top: 0.85rem;
+    &:first-child { margin-top: 0; }
+  }
+  dd {
+    margin-left: 1.5rem;
+    margin-bottom: 0.4rem;
+    color: var(--ink-mut);
+    line-height: 1.65;
+  }
+
+  // ---- Superscript / subscript (footnotes etc.) ----
+  sup, sub {
+    font-size: 0.75em;
+    line-height: 0;
+    a { color: var(--phosphor); text-decoration: none; }
+  }
+
+  p {
+    line-height: 1.78;
+    margin-bottom: 1.2rem;
+  }
+
+  hr {
+    border: none;
+    height: 1px;
+    margin: 3rem 0;
+    background: color-mix(in srgb, var(--phosphor-soft) 40%, transparent);
+  }
+
+  // ---- Links: cyan base + the site's ONE editorial underline swipe ----
+  a:not(.btn):not([class^="carousel-"]):not([class^="list-"]):not(.no-underline):not(.tag-chip) {
+    @include editorial-underline;
+    color: var(--cyan);
+    &.is-hover, &:hover { color: var(--phosphor); }
+  }
+
+  // ---- Lists ----
+  ul, ol { margin-bottom: 1.2rem; padding-left: 1.5rem; }
+  li {
+    line-height: 1.72;
+    margin-bottom: 0.5rem;
+  }
+
+  blockquote {
+    border-left: 3px solid var(--phosphor);
+    padding: 0.4rem 0 0.4rem 1.5rem;
+    margin: 1.75rem 0 1.75rem 0.5rem;
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-size: 1.08em;
+    line-height: 1.7;
+    color: var(--ink-mut);
+
+    p {
+      margin-bottom: 0.5rem;
+      &:last-child { margin-bottom: 0; }
+    }
+
+    // Nested blockquote — quieter accent
+    blockquote {
+      border-left-color: var(--ink-faint);
+      margin-top: 1rem;
+      margin-bottom: 0;
+      font-size: 0.95em;
+    }
+
+    // Inline elements keep their personality inside the quote
+    strong { color: var(--ink); }
+    a { color: var(--cyan); }
+    code { font-size: 0.85em; }
+  }
+
+  // child_page references — rendered as a card, overriding the default
+  // blockquote treatment. Emitted by the Notion sync as:
+  //   > [title](url)
+  //   {: .child-page-link}
+  blockquote.child-page-link {
+    --card-accent: var(--phosphor);
+    border: 1px solid color-mix(in srgb, var(--phosphor-soft) 30%, transparent);
+    border-left: 3px solid var(--phosphor);
+    border-radius: 2px;
+    padding: 0.85rem 1.1rem;
+    margin: 1.5rem 0;
+    font-family: var(--font-display);
+    font-style: normal;
+    font-size: 1rem;
+    line-height: 1.4;
+    color: var(--ink);
+    background: color-mix(in srgb, var(--phosphor-soft) 5%, transparent);
+    transition: border-color 0.25s var(--ease-out-expo, ease-out),
+                background 0.25s var(--ease-out-expo, ease-out);
+    p { margin: 0; }
+    &::before {
+      content: "\\201C";
+      color: var(--phosphor);
+      font-family: var(--font-mono);
+      font-size: 0.62rem;
+      letter-spacing: 0.14em;
+      display: block;
+      margin-bottom: 0.25rem;
+    }
+    a {
+      color: var(--ink);
+      text-decoration: none;
+      font-weight: 600;
+      transition: color 0.2s var(--ease-out-expo, ease-out);
+    }
+    &:hover {
+      border-color: var(--phosphor);
+      background: color-mix(in srgb, var(--phosphor-soft) 10%, transparent);
+      a { color: var(--phosphor); }
+    }
+  }
+
+  img:not(.emoji) {
+    display: block;
+    max-width: 100%;
+    height: auto;
+    border-radius: var(--radius-xs);
+    margin: 1.5rem 0;
+    border: 1px solid color-mix(in srgb, var(--ink) 12%, transparent);
+  }
+
+  .video {
+    position: relative;
+    padding-bottom: 56.25%;
+    margin-bottom: 1rem;
+    width: 100%;
+    iframe {
+      position: absolute;
+      height: 100%;
+      width: 100%;
+    }
+  }
+
+  ul.task-list {
+    list-style: none;
+    padding-left: 24px;
+  }
+
+  input.task-list-item-checkbox {
+    margin-right: 10px;
+    vertical-align: middle;
+  }
+
+  // ---- Tables ----
+  // Calm, modern: horizontal dividers only, no full grid, code never wraps mid-token.
+  // Wrapping the table in a scroll context via display:block lets long tables
+  // pan horizontally on narrow viewports instead of crushing column widths.
+  table:not(.highlight) {
+    display: block;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    margin: 1.75rem 0;
+    border-collapse: collapse;
+    font-size: 0.92em;
+    line-height: 1.55;
+
+    th, td {
+      padding: 0.7rem 1rem;
+      text-align: left;
+      vertical-align: top;
+      border: none;
+      // Code tokens stay on one line — no mid-hex-colour breaks
+      code { white-space: nowrap; }
+    }
+
+    thead th {
+      font-family: var(--font-display);
+      font-weight: 600;
+      font-size: 0.78em;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--phosphor-bright);
+      background: color-mix(in srgb, var(--phosphor-soft) 8%, transparent);
+      border-bottom: 2px solid var(--phosphor-soft);
+      white-space: nowrap;
+    }
+
+    tbody tr + tr td,
+    tbody tr + tr th {
+      border-top: 1px solid color-mix(in srgb, var(--ink) 8%, transparent);
+    }
+
+    tbody tr:nth-child(even) td {
+      background: color-mix(in srgb, var(--ink) 3%, transparent);
+    }
+
+    tbody tr:hover td {
+      background: color-mix(in srgb, var(--phosphor-soft) 6%, transparent);
+    }
+
+    // Code inside cells: subtler chrome than inline code in prose
+    td code {
+      background: color-mix(in srgb, var(--bg-deep) 60%, transparent);
+      border: 1px solid color-mix(in srgb, var(--ink) 8%, transparent);
+      color: var(--cyan);
+      padding: 0.08em 0.35em;
+    }
+  }
+
+  // ---- Code blocks (Rouge syntax highlighting) ----
+  // Substrate well — sunk below the page surface, terminal-CRT feel.
+  pre, pre.highlight {
+    background: var(--bg-deep);
+    border: 1px solid color-mix(in srgb, var(--ink) 10%, transparent);
+    border-left: 2px solid var(--phosphor-soft);
+    border-radius: var(--radius-sm);
+    padding: 1.1rem 1.25rem;
+    margin: 1.5rem 0;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+
+    code {
+      font-family: var(--font-mono);
+      font-size: 0.875rem;
+      line-height: 1.65;
+      color: var(--ink);
+      background: none;
+      padding: 0;
+      border: none;
+      border-radius: 0;
+    }
+  }
+
+  // ---- Inline code ----
+  :not(pre) > code {
+    font-family: var(--font-mono);
+    font-size: 0.85em;
+    background: color-mix(in srgb, var(--phosphor-soft) 12%, transparent);
+    color: var(--ink);
+    padding: 0.1em 0.4em;
+    border-radius: var(--radius-xs);
+    border: 1px solid color-mix(in srgb, var(--phosphor-soft) 20%, transparent);
+    white-space: nowrap;
+  }
+
+  // ---- Rouge token colors (dark mode defaults — see light overrides below) ----
+  .highlight {
+    // Comments — muted italic
+    .c, .c1, .cm, .cp, .ch, .cs, .cpf, .cx { color: var(--ink-faint); font-style: italic; }
+
+    // Keywords — bright phosphor
+    .k, .kd, .kn, .kp, .kr, .kv { color: var(--phosphor-bright); }
+    .kt { color: var(--cyan); } // type keywords
+
+    // Strings — amber
+    .s, .s1, .s2, .sa, .sb, .sc, .sd, .se, .sh, .si, .sx, .sr, .ss { color: var(--amber); }
+
+    // Numbers — violet
+    .m, .mf, .mh, .mi, .mo, .il, .mb, .mx { color: var(--violet); }
+
+    // Function names — phosphor
+    .nf, .fm { color: var(--phosphor); }
+
+    // Classes / tags — cyan
+    .nc, .nt, .no, .nb, .bp { color: var(--cyan); }
+
+    // Attribute — soft phosphor
+    .na { color: var(--phosphor-soft); }
+
+    // Identifiers / variables — ink
+    .n, .nx, .nv, .nl, .nn, .nd, .ne, .ni, .vc, .vg, .vi { color: var(--ink); }
+
+    // Operators — soft phosphor
+    .o, .ow { color: var(--phosphor-soft); }
+
+    // Punctuation — muted ink
+    .p, .pi { color: var(--ink-mut); }
+
+    // Literals
+    .l, .ld { color: var(--ink); }
+
+    // Errors / diffs
+    .err, .gr { color: var(--hazard); }
+    .gd { color: var(--hazard); }
+    .gi { color: var(--phosphor); }
+    .gh { color: var(--phosphor-bright); font-weight: 700; }
+    .gu { color: var(--cyan); font-weight: 700; }
+    .go { color: var(--ink-mut); }
+    .gp { color: var(--ink-mut); }
+    .gt { color: var(--hazard); }
+    .w { color: var(--ink-faint); }
+  }
+
+  // ---- Footnotes ----
+  // Sup refs in body
+  sup a.footnote, sup a[rel="footnote"] {
+    color: var(--phosphor);
+    text-decoration: none;
+    font-weight: 600;
+    &:hover { color: var(--phosphor-bright); }
+  }
+
+  // Footnote definitions section at end
+  .footnotes {
+    margin-top: 3rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid color-mix(in srgb, var(--ink) 12%, transparent);
+    color: var(--ink-mut);
+    font-size: 0.88rem;
+    line-height: 1.65;
+
+    ol { padding-left: 1.5rem; }
+    li { margin-bottom: 0.5rem; }
+    p { margin-bottom: 0.5rem; }
+
+    // Back-link ↩
+    .reversefootnote, a[rel="doc-backlink"] {
+      color: var(--phosphor);
+      text-decoration: none;
+      margin-left: 0.25em;
+      &:hover { color: var(--phosphor-bright); }
+    }
+  }
+}
+
+// ---- Light theme syntax adjustments ----
+// Amber/violet keep dark-mode hues in tokens.scss, so we override here for
+// readability on paper substrate. Scoped to .markdown-body for safety.
+[data-theme="light"] {
+  .markdown-body .highlight {
+    .s, .s1, .s2, .sa, .sb, .sc, .sd, .se, .sh, .si, .sx, .sr, .ss { color: #B07315; }  // amber on paper
+    .m, .mf, .mh, .mi, .mo, .il, .mb, .mx { color: #6B3FA0; }                            // violet on paper
+    .k, .kd, .kn, .kp, .kr, .kv { color: var(--phosphor); }                              // darker phosphor
+    .nf, .fm { color: var(--phosphor-soft); }
+    .na { color: var(--phosphor); }
+    .o, .ow { color: var(--phosphor); }
+  }
+}

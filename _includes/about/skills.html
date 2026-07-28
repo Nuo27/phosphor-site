@@ -1,0 +1,11 @@
+<div class="skills-section">
+  <h3 class="skills-title mono no-select">// {{ include.title | escape }}</h3>
+
+  <div class="skills-tags">
+    {% for skill in include.source %}
+      <span class="skill-tag reveal" style="transition-delay: {{ forloop.index0 | times: 60 }}ms;">
+        {{ skill.name | default: skill }}
+      </span>
+    {% endfor %}
+  </div>
+</div>

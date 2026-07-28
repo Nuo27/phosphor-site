@@ -1,0 +1,327 @@
+// ==========================================================
+// Mixins — shared utilities (must be imported after variables)
+// ==========================================================
+
+@use "variables" as *;
+
+// ==========================================================
+// Border trace — the typed runtime property that powers the
+// card-hover trace animation. Declared as a typed angle so the
+// Web Animations API can interpolate --trace-spread 0deg → 180deg
+// across the conic-gradient stops. Without @property the stops
+// would snap rather than trace.
+// ==========================================================
+@property --trace-spread {
+  syntax: '<angle>';
+  inherits: false;
+  initial-value: 0deg;
+}
+@property --trace-entry {
+  syntax: '<angle>';
+  inherits: false;
+  initial-value: 0deg;
+}
+
+// Theme-aware property switch. Light value first, dark value second.
+@mixin themed($property, $light-value, $dark-value) {
+  [data-theme="light"] & {
+    #{$property}: $light-value;
+  }
+  [data-theme="dark"] & {
+    #{$property}: $dark-value;
+  }
+}
+
+// Editorial swipe underline — the site's ONE underline system.
+// Shared by card titles (.card-title-link) and markdown body links
+// (.markdown-body a). The swipe fires when the resolver writes
+// `.is-hover` to the element (NOT on CSS `:hover`) so the resolver
+// stays the single source of truth for interaction state across
+// native scroll, smooth scroll, and router transitions.
+@mixin editorial-underline {
+  text-decoration: none;
+  position: relative;
+  display: inline-block;
+  transition: color 0.4s $ease-out-expo;
+  &::after {
+    content: "";
+    position: absolute;
+    left: 0; bottom: 0;
+    width: 100%; height: 1px;
+    background: currentColor;
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.3s $ease-out-expo;
+  }
+  &.is-hover::after,
+  &:hover::after,
+  &:focus-visible::after { transform: scaleX(1); }
+}
+
+// ---- Chip substrate — the site's ONE tag/skill chip base. ----
+// Shared by .tag-chip (project cards / detail / hero), .skill-tag
+// (about skills), and .skills-list li (about core competencies).
+// Mono, hairline border, faint phosphor-soft wash that turns neutral
+// on the paper substrate. Hover lift + phosphor recolour + soft glow.
+@mixin chip($pad: 0.3rem 0.65rem, $size: 0.68rem) {
+  font-family: $font-mono;
+  display: inline-block;
+  padding: $pad;
+  border-radius: $radius-xs;
+  font-size: $size;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  line-height: 1.4;
+  color: var(--ink-mut);
+  background: rgba($phosphor-soft, 0.07);
+  border: 1px solid rgba($phosphor-soft, 0.24);
+  transition:
+    transform $dur-fast $ease-out-back,
+    border-color $dur-fast $ease-out-expo,
+    color $dur-fast $ease-out-expo,
+    box-shadow $dur-fast $ease-out-expo,
+    background $dur-fast $ease-out-expo;
+  [data-theme="light"] & {
+    background: rgba($carbon, 0.04);
+    border-color: rgba($carbon, 0.18);
+    color: rgba($carbon, 0.80);
+  }
+}
+
+// Chip hover — lift to phosphor. Triggered by the resolver setting
+// `.is-hover` on the chip (or on the chip's wrapping anchor like
+// <a class="tag-chip tag-chip--link">). One source of truth.
+@mixin chip-hover {
+  &.is-hover, &:hover {
+    transform: translateY(-1px);
+    border-color: var(--phosphor);
+    color: var(--phosphor);
+    background: rgba($phosphor-soft, 0.12);
+    box-shadow: 0 0 12px rgba($phosphor, 0.28);
+    [data-theme="light"] & {
+      border-color: $print-phosphor;
+      color: $print-phosphor;
+      background: rgba($carbon, 0.06);
+      box-shadow: 0 0 10px rgba($carbon, 0.14);
+    }
+  }
+}
+
+// ---- Border lightup — premium hover accent (visual layer) ----
+// The outer phosphor bloom + inset top highlight. Triggered by the
+// resolver writing `.is-hover` (or, for cards, `.is-traced` for the
+// trace pseudo) — NOT by CSS `:hover`. Compose with each consumer's
+// own transform / border-color rules inside that consumer's
+// `&.is-hover { ... }` block.
+@mixin border-lightup($lift-shadow: null, $bloom: 24px, $bloom-alpha: 22%, $top: 35%) {
+  @if $lift-shadow {
+    box-shadow:
+      #{$lift-shadow},
+      0 0 #{$bloom} color-mix(in srgb, var(--phosphor) #{$bloom-alpha}, transparent),
+      inset 0 1px 0 color-mix(in srgb, var(--phosphor) #{$top}, transparent);
+  } @else {
+    box-shadow:
+      0 0 #{$bloom} color-mix(in srgb, var(--phosphor) #{$bloom-alpha}, transparent),
+      inset 0 1px 0 color-mix(in srgb, var(--phosphor) #{$top}, transparent);
+  }
+}
+
+// ---- Focus ring — the keyboard analogue of border-lightup. ----
+// Mirrors the hover language (phosphor edge + bloom + inset top
+// highlight) WITHOUT the lift, so focus never shifts content. Driven
+// by `:focus-visible` (keyboard / AT); mouse-click focus keeps the
+// browser default outline. The 1px phosphor offset ring guarantees a
+// visible indicator even on borderless interactives. Card containers
+// use the `:focus-within` variant inline (their stretched link is the
+// actual tab target). `outline: none` is set ONLY alongside this ring.
+@mixin focus-ring($bloom: 18px, $bloom-alpha: 32%) {
+  &:focus-visible {
+    outline: none;
+    border-color: var(--phosphor);
+    box-shadow:
+      0 0 0 1px color-mix(in srgb, var(--phosphor) 60%, transparent),
+      0 0 #{$bloom} color-mix(in srgb, var(--phosphor) #{$bloom-alpha}, transparent),
+      inset 0 1px 0 color-mix(in srgb, var(--phosphor) 38%, transparent);
+    transition: border-color var(--dur-lightup, 0.45s) var(--ease-out-expo, cubic-bezier(0.16,1,0.3,1)),
+                box-shadow   var(--dur-lightup, 0.45s) var(--ease-out-expo, cubic-bezier(0.16,1,0.3,1));
+  }
+  @media (prefers-reduced-motion: reduce) {
+    &:focus-visible { transition: none !important; }
+  }
+}
+
+// Card hover base — the shared "lift + phosphor-soft border + glow"
+// that every card-type interactive applies. Compose this in each
+// card's `&.is-hover` block. Child-specific flourishes (image zoom,
+// view-chip reveal, pressed scale) stay in the per-card selector.
+@mixin card-hover-base($lift-shadow-dark, $lift-shadow-light, $lift-y: -6px) {
+  &.is-hover {
+    transform: translateY($lift-y);
+    border-color: var(--phosphor-soft);
+    @include border-lightup($lift-shadow-dark);
+    [data-theme="light"] & {
+      @include border-lightup($lift-shadow-light);
+      border-color: $print-phosphor-soft;
+    }
+  }
+  &:active {
+    transform: translateY(0) scale(0.98);
+    transition: transform 0.12s $ease-out-expo;
+  }
+}
+//
+// Pair with the transition list:
+// ==========================================================
+// Border trace overlay — paints a phosphor "light traveling
+// around the border" starting at the cursor's entry angle.
+// Driven by JS:
+//   · JS sets --trace-entry (deg) on the card on hover-enter
+//     (the radial angle from card center to the cursor).
+//   · JS animates --trace-spread 0deg → 180deg via Web Animations API
+//     so a single phosphor segment grows from entry-angle in both
+//     directions around the perimeter.
+//   · On hover-leave the overlay fades out (opacity) and the
+//     underlying phosphor-soft + bloom hover state takes over.
+//
+// Mask construction:
+//
+//   The conic-gradient is a polar-coord paint that fills the whole
+//   pseudo box (inset:0). It must be confined to the 1px border ring
+//   or it would visually span the interior too. Two black mask layers
+//   are composited with mask-composite:exclude (XOR):
+//
+//     layer 1 = black, clipped to padding-box
+//     layer 2 = black, clipped to border-box  (default clip)
+//
+//   XOR of {padding-box, border-box} = the 1px strip between them
+//   = the border ring itself. The mask makes the conic-gradient
+//   invisible everywhere else, so the card's image, title, body,
+//   and tags inside the padding-box are never overpainted.
+//
+// Apply inside the card's selector; requires `position: relative`
+// on the host and a border-radius for the inherited outline.
+// ==========================================================
+@mixin border-trace {
+  &::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    z-index: 2;
+    background: conic-gradient(from var(--trace-entry, 0deg),
+      var(--phosphor) 0deg, var(--phosphor) var(--trace-spread, 0deg),
+      transparent var(--trace-spread, 0deg),
+      transparent calc(360deg - var(--trace-spread, 0deg)),
+      var(--phosphor) calc(360deg - var(--trace-spread, 0deg)),
+      var(--phosphor) 360deg);
+    opacity: 0;
+    transition: opacity 0.2s ease;
+
+    // Render the conic only on the 1px border ring. Two identical
+    // black layers, one clipped to padding-box and one to border-box,
+    // composited with exclude (XOR) — yields exactly border-box minus
+    // padding-box, which is the outline strip. The card interior
+    // (padding-box and content-box) is fully opaque-masked-out, so the
+    // card's image, title, body and tag chips underneath remain
+    // untouched throughout the animation.
+    -webkit-mask-image: linear-gradient(#000 0 0), linear-gradient(#000 0 0);
+    -webkit-mask-clip:  padding-box, border-box;
+    -webkit-mask-composite: xor;
+    mask-image: linear-gradient(#000 0 0), linear-gradient(#000 0 0);
+    mask-clip:  padding-box, border-box;
+    mask-composite: exclude;
+  }
+  // JS is the sole source of truth for whether the border-trace is
+  // running. CSS `:hover` is intentionally NOT a trigger here: when
+  // the cursor is inside a card body but not directly over a link,
+  // CSS `:hover` matches the card via bubbling while the resolver says
+  // nothing is hovered, and the trace pseudo would light up but the
+  // Web Animations API animation driving `--trace-spread` never
+  // fires. Only the resolver adds/removes `.is-traced`.
+  &.is-traced::before {
+    opacity: 1;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    &::before { display: none; }
+  }
+}
+
+// ==========================================================
+// Reusable interactive components — all driven by `.is-hover`.
+// Every interactive visual effect on the site composes from one of
+// these. The resolver is the single source of truth for whether a
+// given element should be marked `.is-hover`; the CSS below is
+// declarative paint, no hover logic lives in CSS.
+//
+// Pattern: each component mixin defines the `&.is-hover` block for
+// the visual layer of that interaction (border, glow, colour,
+// position, scale). Consumers add the mixin inside their own
+// `&.is-hover` block together with child-specific flourishes
+// (image zoom, arrow slide, etc.); or for full "card with all the
+// trimmings", compose `card-interactive-base` + the per-card
+// child flourishes.
+// ==========================================================
+
+// Primary CTA — solid phosphor fill on hover, with phosphor text shadow.
+// Theme-aware via CSS variables (--phosphor / --bg-void / --bg-overlay
+// flip automatically); the light-theme override is *not* nested inside
+// `&.is-hover` because including the mixin under a `[data-theme="light"]`
+// scope would double-prefix the selector.
+@mixin cta-primary-hover {
+  &.is-hover, &:hover {
+    transform: translateY(-2px);
+    background: var(--phosphor);
+    border-color: var(--phosphor);
+    color: var(--bg-void);
+    box-shadow: 0 8px 28px color-mix(in srgb, var(--phosphor) 35%, transparent),
+                0 0 30px color-mix(in srgb, var(--phosphor) 25%, transparent);
+  }
+  &:active {
+    transform: translateY(0) scale(0.98);
+    transition: transform 0.12s $ease-out-expo;
+  }
+}
+
+// Secondary CTA — outline lights up cyan with a soft cyan bloom.
+@mixin cta-secondary-hover {
+  &.is-hover, &:hover {
+    transform: translateY(-2px);
+    border-color: var(--cyan);
+    color: var(--cyan);
+    box-shadow: 0 0 24px color-mix(in srgb, var(--cyan) 18%, transparent);
+  }
+  &:active {
+    transform: translateY(0) scale(0.98);
+    transition: transform 0.12s $ease-out-expo;
+  }
+}
+
+// Icon-style interactive — phosphor border wash + lift + bloom.
+// Used by `.social` and `#theme-toggler`. Parameters tune the lift,
+// the phosphor wash opacity, and the bloom dimensions. Theme-aware
+// via CSS variables.
+@mixin icon-hover($lift-y: -3px, $wash: 10%, $bloom: 18px, $bloom-alpha: 24%, $top: 38%) {
+  &.is-hover, &:hover {
+    transform: translateY($lift-y);
+    border-color: var(--phosphor) !important;
+    background: color-mix(in srgb, var(--phosphor) $wash, transparent) !important;
+    color: var(--ink) !important;
+    @include border-lightup($bloom: $bloom, $bloom-alpha: $bloom-alpha, $top: $top);
+  }
+}
+
+// Solid-phosphor pill that fills on hover — used by `#backToTop`.
+@mixin back-to-top-hover {
+  &.is-hover, &:hover {
+    background: var(--phosphor);
+    color: var(--bg-void);
+    border-color: var(--phosphor);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 24px color-mix(in srgb, var(--phosphor) 35%, transparent);
+  }
+  &:active {
+    transform: translateY(0) scale(0.95);
+  }
+}

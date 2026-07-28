@@ -1,0 +1,8 @@
+- slug: tech
+  name: Tech
+  eyebrow: "// CHANNEL_TECH"
+  tagline: "Engineering deep-dives, tooling, and writeups."
+- slug: notes
+  name: Notes
+  eyebrow: "// CHANNEL_NOTES"
+  tagline: "Loose notes, snippets, and reflections."

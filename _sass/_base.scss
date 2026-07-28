@@ -1,0 +1,224 @@
+// ==========================================================
+// Base — typography, substrate, CRT texture, scrollbar
+// ==========================================================
+
+@use "variables" as *;
+
+html {
+  padding-left: calc(100vw - 100%);
+}
+@media (prefers-reduced-motion: no-preference) {
+  html { scroll-behavior: smooth; }
+}
+
+body {
+  font-family: $font-body;
+  font-feature-settings: "ss01", "cv11";
+  font-optical-sizing: auto;
+  text-rendering: optimizeLegibility;
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  position: relative;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+// Macro typography — display, uppercase, tight tracking
+h1, h2, h3, h4, h5, h6 {
+  font-family: $font-display;
+  font-weight: 700;
+  letter-spacing: -0.028em;
+  text-transform: uppercase;
+  font-optical-sizing: auto;
+}
+
+// Mono runtime label — utility class for any technical micro-text
+.mono {
+  font-family: $font-mono;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+// Prevent long-press / drag-selection on decorative labels
+.no-select {
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+// Terminal cursor blink — the site's ONE blink system.
+// .blink (landing HUD), .title-prompt (page/section titles), and
+// .cursor-blink (article empty-state) all share this single rule +
+// keyframe; inline <style> blocks and other partials reference the
+// same name. One reduced-motion guard below covers all three.
+@keyframes blink {
+  0%, 50% { opacity: 1; }
+  51%, 100% { opacity: 0; }
+}
+.blink,
+.title-prompt,
+.cursor-blink {
+  color: var(--phosphor);
+  animation: blink 1.1s steps(1) infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .blink, .title-prompt, .cursor-blink { animation: none !important; }
+}
+
+// Selection — phosphor highlight
+::selection {
+  background: rgba($phosphor, 0.28);
+  color: $ink;
+}
+
+[data-theme="light"] ::selection {
+  background: rgba($phosphor, 0.32);
+  color: $carbon;
+}
+
+// ---- CRT scanline + noise overlay (fixed, full-viewport, pointer-events:none) ----
+.crt-overlay {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9998;
+  mix-blend-mode: overlay;
+  opacity: 0.18;
+
+  // Horizontal scanlines
+  background-image: repeating-linear-gradient(
+    0deg,
+    rgba(0, 0, 0, 0.22) 0px,
+    rgba(0, 0, 0, 0.22) 1px,
+    transparent 1px,
+    transparent 3px
+  );
+
+  [data-theme="light"] & {
+    opacity: 0.10;
+    mix-blend-mode: multiply;
+    background-image: repeating-linear-gradient(
+      0deg,
+      rgba(10, 11, 15, 0.10) 0px,
+      rgba(10, 11, 15, 0.10) 1px,
+      transparent 1px,
+      transparent 3px
+    );
+  }
+}
+
+// Global SVG grain — adds analog texture
+.crt-grain {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9997;
+  opacity: 0.025;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+
+  [data-theme="light"] & { opacity: 0.035; }
+}
+
+// Vignette — focuses the HUD
+.crt-vignette {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9996;
+  background: radial-gradient(ellipse at center, transparent 60%, rgba(0,0,0,0.35) 100%);
+
+  [data-theme="light"] & {
+    background: radial-gradient(ellipse at center, transparent 68%, rgba(10,11,15,0.07) 100%);
+  }
+}
+
+// ---- Custom scrollbar ----
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: $bg-void; }
+::-webkit-scrollbar-thumb {
+  background: rgba($phosphor, 0.25);
+  border: 2px solid $bg-void;
+  &:hover { background: rgba($phosphor, 0.5); }
+}
+[data-theme="light"] {
+  ::-webkit-scrollbar-track { background: $paper; }
+  ::-webkit-scrollbar-thumb {
+    background: rgba($carbon, 0.22);
+    border-color: $paper;
+  }
+}
+
+// ---- HUD corner registration marks ----
+.hud-frame {
+  .hud-corner {
+    position: fixed;
+    width: 22px;
+    height: 22px;
+    z-index: 9990;
+    pointer-events: none;
+    opacity: 0.32;
+
+    &::before, &::after {
+      content: "";
+      position: absolute;
+      background: $phosphor;
+    }
+    &::before { width: 100%; height: 1px; top: 50%; }
+    &::after  { width: 1px; height: 100%; left: 50%; }
+
+    &.tl { top: 14px; left: 14px; }
+    &.tr { top: 14px; right: 14px; }
+    &.bl { bottom: 14px; left: 14px; }
+    &.br { bottom: 14px; right: 14px; }
+
+    [data-theme="light"] & {
+      &::before, &::after { background: $carbon; }
+      opacity: 0.22;
+    }
+  }
+}
+
+// ==========================================================
+// Skip to content — keyboard accessibility
+// Off-screen until focused (any focus, incl. programmatic), then
+// slides in as a phosphor chip. Lives on <body> outside the
+// smooth-scroll wrapper so position:fixed stays viewport-fixed.
+// ==========================================================
+.skip-link {
+  position: fixed;
+  top: 0.75rem;
+  left: 0.75rem;
+  z-index: 10004;
+  transform: translateY(calc(-100% - 1.5rem));
+  font-family: $font-mono;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 0.6rem 0.95rem;
+  background: var(--bg-surface);
+  color: var(--phosphor);
+  border: 1px solid var(--phosphor);
+  border-radius: $radius-xs;
+  text-decoration: none;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
+  transition: transform 0.28s $ease-out-expo;
+  &:focus { transform: translateY(0); }
+}
+
+// ==========================================================
+// #smooth-scroll wrapper
+// ==========================================================
+// Always a flex column matching body's h-100.d-flex.flex-column, so
+// footer.mt-auto pins to the bottom of the viewport. The wrapper is a
+// plain container now — it stays in normal flow and the page scrolls
+// natively. (Historically this was the transform target for a custom
+// smooth-scroll module; that system has been removed in favour of
+// native scrolling.)
+#smooth-scroll {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+

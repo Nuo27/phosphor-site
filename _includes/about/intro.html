@@ -1,0 +1,15 @@
+{% assign s = page.intro %}
+{% if s %}
+<section class="reveal mb-5">
+  {% include common/section-head.html eyebrow=s.eyebrow title=s.title heading_tag=s.heading_tag prompt=s.prompt %}
+  <div class="about-intro">
+    {% for p in s.paragraphs %}
+      {% if p.placeholder %}
+        <p class="placeholder">[ {{ p.text }} ]</p>
+      {% else %}
+        {{ p.text | markdownify }}
+      {% endif %}
+    {% endfor %}
+  </div>
+</section>
+{% endif %}

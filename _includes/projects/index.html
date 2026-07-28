@@ -1,0 +1,136 @@
+<section class="projects-section">
+
+  <header class="projects-header" data-reveal>
+    <span class="mag-kicker mono no-select">// SELECTED_WORK</span>
+    <h1 class="mag-heading">Portfolio<span class="title-prompt">_</span></h1>
+    <p class="projects-subtitle">{{ page.subtitle | default: site.portfolio.subtitle }}</p>
+  </header>
+
+  {%- comment -%} Visibility config: page.portfolio overrides site.portfolio per-field.
+        hidden_*  → cards collapsed behind a per-key toggler until revealed.
+        dimmed_*  → cards shown but de-emphasized (half-hidden). {%- endcomment -%}
+  {%- assign sc = site.portfolio -%}
+  {%- assign pc = page.portfolio -%}
+  {%- assign hidden_tags  = pc.hidden_tags        | default: sc.hidden_tags -%}
+  {%- assign hidden_cats  = pc.hidden_categories  | default: sc.hidden_categories -%}
+  {%- assign dimmed_tags  = pc.dimmed_tags        | default: sc.dimmed_tags -%}
+  {%- assign dimmed_cats  = pc.dimmed_categories  | default: sc.dimmed_categories -%}
+  {%- assign filter_label = pc.filter_label       | default: sc.filter_label | default: 'FILTER' -%}
+  {%- assign show_label   = pc.show_label         | default: sc.show_label   | default: 'SHOW' -%}
+
+  {%- comment -%} Resolve each card's hidden-keys (the tags/categories that hide it)
+        and visibility while rendering, and count hidden cards for the search total. {%- endcomment -%}
+  {% assign hidden_count = 0 %}
+  {% capture grid_html %}
+    {% assign pn_groups = site.projects | group_by: "status" | sort: "name" | reverse %}
+    {% assign card_index = 0 %}
+    {% for g in pn_groups %}
+    {% assign pn_items = g.items | sort: "name" %}
+    {% for project in pn_items %}
+      {% assign card_index = card_index | plus: 1 %}
+
+      {%- assign project_img   = project.image -%}
+      {%- assign project_name  = project.name -%}
+      {%- assign project_desc  = project.description -%}
+      {%- assign project_tags  = project.tags -%}
+      {%- assign project_cat   = project.category -%}
+      {%- assign project_url   = project.url | relative_url -%}
+
+      {%- comment -%} hidden-keys: every hidden tag/category on this card (space-sep slugs).
+            A card is revealed when ANY of its keys is toggled on. {%- endcomment -%}
+      {%- assign project_hidden_keys = '' -%}
+      {%- for t in project.tags -%}
+        {%- if hidden_tags contains t -%}
+          {%- assign slug = t | slugify -%}
+          {%- if project_hidden_keys == '' -%}{% assign project_hidden_keys = slug %}{%- else -%}{% assign project_hidden_keys = project_hidden_keys | append: ' ' | append: slug %}{%- endif -%}
+        {%- endif -%}
+      {%- endfor -%}
+      {%- if project.category and hidden_cats contains project.category -%}
+        {%- assign slug = project.category | slugify -%}
+        {%- if project_hidden_keys == '' -%}{% assign project_hidden_keys = slug %}{%- else -%}{% assign project_hidden_keys = project_hidden_keys | append: ' ' | append: slug %}{%- endif -%}
+      {%- endif -%}
+
+      {%- comment -%} visibility priority: hidden > dimmed > shown {%- endcomment -%}
+      {%- assign project_vis = '' -%}
+      {%- if project_hidden_keys != '' -%}{%- assign project_vis = 'hidden' -%}
+      {%- elsif project.category and dimmed_cats contains project.category -%}{%- assign project_vis = 'dimmed' -%}
+      {%- else -%}
+        {%- for t in project.tags -%}{%- if dimmed_tags contains t -%}{%- assign project_vis = 'dimmed' -%}{%- break -%}{%- endif -%}{%- endfor -%}
+      {%- endif -%}
+      {%- if project_vis == 'hidden' -%}{% assign hidden_count = hidden_count | plus: 1 %}{%- endif -%}
+
+      {% include projects/project-card.html %}
+
+    {% endfor %}
+    {% endfor %}
+  {% endcapture %}
+
+  {% assign visible_total = site.projects.size | minus: hidden_count %}
+
+  {% if site.projects.size > 0 %}
+  {% include common/search.html placeholder="grep projects…" total=visible_total list_id="projects-grid" item_selector=".card-wrap" %}
+  {% endif %}
+
+  {% comment %} Distinct categories → filter chips (only if more than one exists) {% endcomment %}
+  {% assign project_cats = "" | split: "" %}
+  {% for p in site.projects %}
+    {% if p.category %}{% assign project_cats = project_cats | push: p.category %}{% endif %}
+  {% endfor %}
+  {% assign project_cats = project_cats | uniq | sort %}
+
+  {%- comment -%} Build one toggler per hidden key (tag or category) that actually
+        hides ≥1 card. Counted across all projects; a card shared between keys
+        counts toward each. {%- endcomment -%}
+  {% assign has_togglers = false %}
+  {% capture togglers_html %}
+    {% for ht in hidden_tags %}
+      {% assign kc = 0 %}
+      {% for p in site.projects %}{% if p.tags contains ht %}{% assign kc = kc | plus: 1 %}{% endif %}{% endfor %}
+      {%- if kc > 0 -%}{% assign has_togglers = true %}
+      <button class="cat-chip cat-chip--toggle mono" type="button"
+              data-visibility-toggle data-target="#projects-grid"
+              data-reveal-key="{{ ht | slugify }}"
+              data-count="{{ kc }}"
+              aria-pressed="false"
+              aria-label="Toggle {{ ht }} ({{ kc }})">{{ ht | upcase }}<span class="cat-chip__count">{{ kc }}</span></button>
+      {%- endif -%}
+    {% endfor %}
+    {% for hc in hidden_categories %}
+      {% assign kc = 0 %}
+      {% for p in site.projects %}{% if p.category == hc %}{% assign kc = kc | plus: 1 %}{% endif %}{% endfor %}
+      {%- if kc > 0 -%}{% assign has_togglers = true %}
+      <button class="cat-chip cat-chip--toggle mono" type="button"
+              data-visibility-toggle data-target="#projects-grid"
+              data-reveal-key="{{ hc | slugify }}"
+              data-count="{{ kc }}"
+              aria-pressed="false"
+              aria-label="Toggle {{ hc }} ({{ kc }})">{{ hc | upcase }}<span class="cat-chip__count">{{ kc }}</span></button>
+      {%- endif -%}
+    {% endfor %}
+  {% endcapture %}
+
+  {% comment %} Filter bar - carries the divider (border-bottom). Togglers sit on
+        this row, right-aligned, above the divider. Renders when there are
+        multiple categories OR any reveal togglers. {% endcomment %}
+  {% if project_cats.size > 1 or has_togglers %}
+  <nav class="cat-filter reveal" data-category-filter
+       data-filter-list="#projects-grid"
+       data-filter-item=".card-wrap"
+       aria-label="Filter projects by category">
+    <span class="cat-filter__label mono no-select">// {{ filter_label | upcase }}</span>
+    {% if project_cats.size > 1 %}
+    <div class="cat-filter__chips">
+      <button class="cat-chip is-active mono" type="button" data-cat="all">ALL</button>
+      {% for c in project_cats %}
+        <button class="cat-chip mono" type="button" data-cat="{{ c | slugify }}">{{ c | upcase }}</button>
+      {% endfor %}
+    </div>
+    {% endif %}
+    {% if has_togglers %}<div class="visibility-toggles"><span class="cat-filter__label mono no-select">// {{ show_label | upcase }}</span>{{ togglers_html }}</div>{% endif %}
+  </nav>
+  {% endif %}
+
+  <div class="projects-grid" id="projects-grid">
+    {{ grid_html }}
+  </div>
+</section>

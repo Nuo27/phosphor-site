@@ -1,0 +1,14 @@
+{% assign s = page.testimonials %}
+{% if s %}
+<section class="reveal mb-5">
+  {% include common/section-head.html eyebrow=s.eyebrow title=s.title %}
+  <div class="testimonials">
+    {% for t in s.items %}
+      <blockquote class="testimonial{% if t.placeholder %} placeholder{% endif %}">
+        <p>"{{ t.quote }}"</p>
+        <cite>- {{ t.author }}</cite>
+      </blockquote>
+    {% endfor %}
+  </div>
+</section>
+{% endif %}

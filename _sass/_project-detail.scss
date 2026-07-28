@@ -1,0 +1,563 @@
+// ==========================================================
+// Project detail — editorial hero, deck, body, prev/next nav
+// Pure CSS using runtime tokens (var(--*)); no SCSS vars needed.
+// ==========================================================
+
+.project-detail { padding-bottom: 5rem; }
+
+/* ---- Editorial hero (full-bleed, magazine cover) ---- */
+.project-hero {
+  position: relative;
+  isolation: isolate;
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
+  min-height: clamp(540px, 88vh, 920px);
+  display: grid;
+  grid-template-columns: minmax(28px, 6vw) 1fr minmax(28px, 6vw);
+  grid-template-rows: 1fr;
+  align-items: end;
+  overflow: hidden;
+  background: var(--bg-void);
+  color: var(--ink);
+}
+
+/* ---- Atmosphere stack ---- */
+.hero-backdrop {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  overflow: hidden;
+}
+.hero-image-wrap {
+  position: absolute;
+  inset: 0;
+  transform-origin: 62% 38%;
+  will-change: opacity, transform, filter;
+  transition:
+    opacity 1.2s var(--ease-out-expo) 200ms,
+    filter 1.2s var(--ease-out-expo) 200ms,
+    transform 1.2s var(--ease-out-expo) 200ms;
+}
+// Hidden start state only when JS is alive (it owns the .is-visible
+// reveal). No-JS falls through to the natural visible state so the
+// hero cover never disappears behind a stuck opacity:0.
+.js-reveal-ready .hero-image-wrap {
+  opacity: 0;
+  filter: blur(8px);
+  transform: scale(1.10);
+}
+.hero-image-wrap.is-visible {
+  opacity: 1;
+  filter: blur(0);
+  transform: scale(1.04);
+}
+.hero-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: contrast(1.05) saturate(0.9) brightness(0.94);
+}
+
+.hero-grain {
+  position: absolute;
+  inset: 0;
+  opacity: 0.06;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+  pointer-events: none;
+}
+[data-theme="light"] .hero-grain { opacity: 0.05; mix-blend-mode: multiply; }
+
+.hero-frame {
+  position: absolute;
+  inset: 14px;
+  border: 1px solid color-mix(in srgb, var(--ink) 14%, transparent);
+  border-radius: var(--radius-sm);
+  pointer-events: none;
+  opacity: 0.5;
+}
+
+.hero-veil {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(180deg,
+      color-mix(in srgb, var(--bg-void) 18%, transparent) 0%,
+      color-mix(in srgb, var(--bg-void) 0%, transparent) 28%,
+      color-mix(in srgb, var(--bg-void) 38%, transparent) 70%,
+      color-mix(in srgb, var(--bg-void) 80%, transparent) 100%),
+    linear-gradient(90deg,
+      color-mix(in srgb, var(--bg-void) 58%, transparent) 0%,
+      color-mix(in srgb, var(--bg-void) 12%, transparent) 45%,
+      transparent 78%);
+  pointer-events: none;
+}
+
+.hero-light {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 60% 45% at 78% 22%, rgba(255,255,255,0.07) 0%, transparent 65%),
+    linear-gradient(115deg, rgba(255,255,255,0.04) 0%, transparent 35%);
+  pointer-events: none;
+}
+
+/* ---- Typography column ---- */
+.hero-content {
+  grid-column: 2 / 3;
+  grid-row: 1;
+  align-self: end;
+  position: relative;
+  padding-block: clamp(72px, 14vh, 140px) clamp(56px, 10vh, 96px);
+  max-width: 720px;
+}
+/* Frosted panel moved to .hero-title::before below - kept tight to the title only. */
+@property --panel-strength {
+  syntax: '<percentage>';
+  initial-value: 0%;
+  inherits: false;
+}
+@keyframes hero-panel {
+  to { --panel-strength: 100%; }
+}
+
+.hero-meta {
+  font-family: var(--font-mono);
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  font-size: clamp(0.66rem, 0.78vw, 0.78rem);
+  color: var(--ink);
+  opacity: 0.62;
+  margin: 0 0 1.1rem;
+}
+
+.hero-kicker {
+  font-family: var(--font-mono);
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  font-size: clamp(0.7rem, 0.82vw, 0.84rem);
+  color: var(--phosphor);
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  margin: 0 0 1.5rem;
+}
+.kicker-mark {
+  display: inline-block;
+  width: 36px;
+  height: 1px;
+  background: currentColor;
+}
+
+.hero-title {
+  position: relative;
+  isolation: isolate;
+  display: inline-block;
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: clamp(3rem, 9.5vw, 7.5rem);
+  letter-spacing: -0.028em;
+  line-height: 0.92;
+  text-wrap: balance;
+  max-width: 13ch;
+  margin: 0 0 clamp(1.2rem, 2.4vh, 1.8rem);
+  color: var(--ink);
+  font-feature-settings: "ss01", "ss02", "cv11";
+  font-optical-sizing: auto;
+}
+.hero-title::before {
+  content: "";
+  position: absolute;
+  top: clamp(-6px, -0.6vh, -2px);
+  bottom: clamp(-6px, -0.6vh, -2px);
+  left: clamp(-18px, -1.6vw, -12px);
+  right: clamp(-180px, -16vw, -120px);
+  z-index: -1;
+  border-radius: 2px;
+  --panel-strength: 0%;
+  background: linear-gradient(
+    100deg,
+    color-mix(in srgb, var(--bg-void) calc(55% * var(--panel-strength) / 100%), transparent) 0%,
+    color-mix(in srgb, var(--bg-void) calc(32% * var(--panel-strength) / 100%), transparent) 60%,
+    transparent 100%
+  );
+  backdrop-filter: blur(18px) saturate(1.05);
+  -webkit-backdrop-filter: blur(18px) saturate(1.05);
+  -webkit-mask-image: linear-gradient(
+    to right, black 0%, black 55%, transparent 100%
+  );
+          mask-image: linear-gradient(
+    to right, black 0%, black 55%, transparent 100%
+  );
+  pointer-events: none;
+  animation: hero-panel 1.6s var(--ease-out-expo) 0.4s forwards;
+}
+
+.hero-lede {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-weight: 400;
+  font-size: clamp(1.1rem, 1.7vw, 1.45rem);
+  line-height: 1.5;
+  letter-spacing: -0.005em;
+  color: var(--ink);
+  opacity: 0.86;
+  text-wrap: pretty;
+  max-width: 44ch;
+  margin: 0 0 clamp(1.4rem, 2.8vh, 2rem);
+}
+
+.hero-rule {
+  width: 64px;
+  height: 1px;
+  background: color-mix(in srgb, var(--ink) 50%, transparent);
+}
+
+/* ---- Reveal stagger ---- */
+.hero-content [data-reveal] { transition-delay: var(--reveal-delay, 0ms); }
+.hero-meta   { --reveal-delay: 300ms; transition-duration: 800ms; }
+.hero-lede   { --reveal-delay: 0ms;   transition-duration: 550ms; }
+.hero-rule   { --reveal-delay: 90ms;  transition-duration: 550ms; transform: none !important; }
+.hero-image-wrap { transition-delay: 200ms; }
+
+/* ---- Kicker typer (built in JS) ---- */
+.hero-kicker .typer { display: inline-block; }
+.hero-kicker .typer-caret {
+  display: inline-block;
+  width: 0.6ch;
+  margin-left: 0.1ch;
+  color: currentColor;
+  font-family: var(--font-mono);
+  animation: typer-blink 0.85s steps(2, end) infinite;
+}
+.hero-kicker .typer-caret.is-done {
+  opacity: 0;
+  transition: opacity 240ms var(--ease-out-expo);
+}
+@keyframes typer-blink { 50% { opacity: 0; } }
+
+/* ---- Title word mask (built in JS) ---- */
+.hero-title.is-ready {
+  /* parent no longer needs the global translateY; words animate */
+  transform: none !important;
+  opacity: 1 !important;
+}
+.hero-title .hero-w {
+  display: inline-block;
+  overflow: hidden;
+  vertical-align: bottom;
+  line-height: inherit;
+}
+.hero-title .hero-w-i {
+  display: inline-block;
+  transform: translateY(110%);
+  transition: transform 700ms var(--ease-out-expo);
+  transition-delay: calc(var(--word-i, 0) * 45ms);
+  will-change: transform;
+}
+.hero-title.is-visible .hero-w-i {
+  transform: translateY(0);
+}
+
+/* ---- Body reading column reveal ---- */
+.project-body [data-reveal] {
+  transition-duration: 500ms;
+  transition-delay: var(--reveal-delay, 0ms);
+}
+
+/* ---- No-image variant ---- */
+.project-hero--no-image { min-height: 0; padding: 0; }
+.project-hero--no-image .hero-image-wrap,
+.project-hero--no-image .hero-grain,
+.project-hero--no-image .hero-frame { display: none; }
+.project-hero--no-image .hero-veil {
+  background: linear-gradient(155deg,
+    color-mix(in srgb, var(--bg-surface) 100%, transparent) 0%,
+    color-mix(in srgb, var(--bg-void) 100%, transparent) 100%);
+}
+
+/* ---- Mobile restructure ---- */
+@media (max-width: 720px) {
+  .project-hero {
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    overflow: visible;
+    width: 100%;
+    margin-left: 0;
+  }
+  .hero-backdrop {
+    position: relative;
+    inset: auto;
+    aspect-ratio: 4 / 3;
+    max-height: 56vh;
+    overflow: hidden;
+  }
+  .hero-image-wrap {
+    position: relative;
+    inset: auto;
+    width: 100%;
+    height: 100%;
+    transform: none;
+    animation: none;
+    transition: none;
+    opacity: 1;
+    filter: none;
+  }
+  .hero-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: contrast(1.05) saturate(0.9) brightness(0.94);
+  }
+  .hero-veil {
+    /* Stronger bottom shade so text reads on bright cover images */
+    background:
+      linear-gradient(180deg,
+        color-mix(in srgb, var(--bg-void) 0%, transparent) 0%,
+        color-mix(in srgb, var(--bg-void) 0%, transparent) 55%,
+        color-mix(in srgb, var(--bg-void) 55%, transparent) 100%);
+  }
+  .hero-grain,
+  .hero-frame,
+  .hero-light { display: none; }
+  .hero-content {
+    grid-column: auto;
+    align-self: stretch;
+    max-width: none;
+    padding: clamp(36px, 9vw, 56px) clamp(20px, 6vw, 32px) clamp(48px, 12vw, 72px);
+    background: transparent;
+  }
+  .hero-title::before { display: none; }
+  .hero-title {
+    font-size: clamp(2.4rem, 12vw, 3.6rem);
+    line-height: 0.96;
+    max-width: 11ch;
+    letter-spacing: -0.022em;
+  }
+  .hero-kicker { margin-bottom: 1.2rem; }
+}
+
+/* ---- Reduced motion ---- */
+@media (prefers-reduced-motion: reduce) {
+  .hero-image-wrap,
+  .hero-title::before,
+  .hero-content [data-reveal],
+  .hero-title .hero-w-i {
+    animation: none !important;
+    transition: none !important;
+    transform: none !important;
+    opacity: 1 !important;
+    filter: none !important;
+    --panel-strength: 100% !important;
+  }
+  .hero-kicker .typer-caret {
+    animation: none !important;
+    opacity: 0 !important;
+  }
+  .pn-card,
+  .pn-card .pn-rail,
+  .pn-card .pn-arrow,
+  .pn-card .pn-cover,
+  .pn-card .pn-title::after { transition: none !important; }
+  .pn-card:hover,
+  .pn-card:active { transform: none !important; }
+  .pn-card:hover .pn-cover,
+  .pn-card:hover .pn-arrow { transform: none !important; }
+}
+
+/* ---- Deck wrapper padding (grid + meta + tags are shared in _sass/_detail.scss) ---- */
+.project-deck { padding: 3rem 0 2.5rem; }
+
+/* ---- Body reading column (prose lives in _sass/_markdown.scss;
+   only the serif H2 override is project-specific) ---- */
+.project-body-section { padding: 1rem 0 3rem; }
+.project-body h2 {
+  font-family: var(--font-serif);
+  font-size: clamp(1.6rem, 2.6vw, 2rem);
+  font-weight: 500;
+  letter-spacing: -0.022em;
+  margin-top: 3rem;
+  margin-bottom: 1.1rem;
+  color: var(--ink);
+}
+
+/* ---- Prev / Next + back ---- */
+.project-nav {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.25rem;
+  padding-top: 3rem;
+  border-top: 1px solid color-mix(in srgb, var(--ink) 10%, transparent);
+}
+@media (min-width: 768px) {
+  .project-nav {
+    grid-template-columns: 1fr 1fr;
+    grid-template-areas:
+      "back back"
+      "prev next";
+  }
+}
+.back-link { grid-area: back; }   /* visual in _sass/_detail.scss */
+.pn-prev { grid-area: prev; }
+.pn-next { grid-area: next; }
+
+.pn-card {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  min-height: 116px;
+  padding: 1.15rem 1.35rem;
+  border-radius: var(--radius-sm);
+  border: 1px solid color-mix(in srgb, var(--ink) 12%, transparent);
+  color: var(--ink);
+  text-decoration: none;
+  overflow: hidden;
+  transition:
+    transform var(--dur-base) var(--ease-out-expo),
+    border-color var(--dur-base) var(--ease-out-expo),
+    box-shadow var(--dur-base) var(--ease-out-expo);
+}
+.pn-next { flex-direction: row-reverse; text-align: right; }
+
+/* Kill any inherited link underline (UA a:hover etc.) - only the title ::after underlines on hover */
+.pn-card, .pn-card:hover, .pn-card:focus-visible,
+.pn-card span, .pn-card i { text-decoration: none; border-bottom: none; }
+
+/* Full-bleed cover image */
+.pn-cover {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 0;
+  filter: grayscale(0.25) contrast(1.05) brightness(0.92);
+  transition: transform var(--dur-base) var(--ease-out-expo),
+              filter var(--dur-base) var(--ease-out-expo);
+}
+
+/* Veil - surface-tinted gradient keeps text legible over the image */
+.pn-veil {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background: linear-gradient(90deg,
+    color-mix(in srgb, var(--bg-surface) 92%, transparent) 0%,
+    color-mix(in srgb, var(--bg-surface) 60%, transparent) 48%,
+    color-mix(in srgb, var(--bg-surface) 10%, transparent) 100%);
+}
+.pn-next .pn-veil {
+  background: linear-gradient(270deg,
+    color-mix(in srgb, var(--bg-surface) 92%, transparent) 0%,
+    color-mix(in srgb, var(--bg-surface) 60%, transparent) 48%,
+    color-mix(in srgb, var(--bg-surface) 10%, transparent) 100%);
+}
+
+/* Direction rail - phosphor accent on the leading edge; glows on hover */
+.pn-rail {
+  position: absolute;
+  top: 16px;
+  bottom: 16px;
+  left: 0;
+  width: 2px;
+  border-radius: 2px;
+  z-index: 2;
+  background: color-mix(in srgb, var(--phosphor) 45%, transparent);
+  transition: background var(--dur-base) var(--ease-out-expo),
+              box-shadow var(--dur-base) var(--ease-out-expo);
+}
+.pn-next .pn-rail { left: auto; right: 0; }
+
+/* Direction arrow; slides on hover */
+.pn-arrow {
+  position: relative;
+  z-index: 2;
+  font-size: 0.85rem;
+  color: var(--ink);
+  opacity: 0.7;
+  transition: transform var(--dur-base) var(--ease-out-expo),
+              color var(--dur-fast) var(--ease-out-expo),
+              opacity var(--dur-fast) var(--ease-out-expo);
+}
+
+/* Text stack */
+.pn-text {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.2rem;
+  min-width: 0;
+}
+.pn-next .pn-text { align-items: flex-end; }
+.pn-kicker {
+  font-size: 0.58rem;
+  letter-spacing: 0.2em;
+  color: var(--phosphor);
+}
+.pn-title {
+  position: relative;
+  display: inline-block;
+  max-width: 100%;
+  font-family: var(--font-serif);
+  font-size: clamp(1.1rem, 1.6vw, 1.3rem);
+  font-weight: 500;
+  letter-spacing: -0.015em;
+  line-height: 1.2;
+  color: var(--ink);
+  transition: color var(--dur-base) var(--ease-out-expo);
+}
+/* Underline - title only, grows on hover */
+.pn-title::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -3px;
+  height: 1px;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform var(--dur-base) var(--ease-out-expo);
+}
+.pn-next .pn-title::after { transform-origin: right center; }
+.pn-meta {
+  font-size: 0.56rem;
+  letter-spacing: 0.16em;
+  color: var(--ink-mut);
+}
+
+/* Hover - lift, phosphor border, glow, cover zoom, rail lights, arrow slides, title underline */
+@media (hover: hover) and (pointer: fine) {
+  .pn-card:hover {
+    transform: translateY(-5px);
+    border-color: var(--phosphor-soft);
+    box-shadow: 0 18px 40px rgba(0, 0, 0, 0.45);
+    [data-theme="light"] & { box-shadow: 0 18px 32px rgba(10, 11, 15, 0.16); }
+    .pn-cover { transform: scale(1.06); filter: grayscale(0) contrast(1.08) brightness(1); }
+    .pn-rail {
+      background: var(--phosphor);
+      box-shadow: 0 0 12px color-mix(in srgb, var(--phosphor) 60%, transparent);
+    }
+    .pn-arrow { color: var(--phosphor); opacity: 1; }
+    .pn-title { color: var(--phosphor); }
+    .pn-title::after { transform: scaleX(1); }
+  }
+  .pn-prev:hover .pn-arrow { transform: translateX(-4px); }
+  .pn-next:hover .pn-arrow { transform: translateX(4px); }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .pn-card:active {
+    transform: translateY(0) scale(0.985);
+    transition: transform 0.12s var(--ease-out-expo);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .project-body { animation: none; }
+}

@@ -1,0 +1,4 @@
+﻿# Notion sync output
+
+Generated Markdown files from the Notion CMS integration appear here.
+Enable sync in `integrations/notion-sync/`.

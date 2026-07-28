@@ -1,0 +1,35 @@
+{%- comment -%}
+  Stream card - project. Params: project, index (stream position), side (fi-side-left/right), labels.
+{%- endcomment -%}
+{%- assign p = include.project -%}
+<article class="featured-item featured-item--project {{ include.side }} reveal{% if include.pool %} rw-item{% endif %}"
+         data-item-type="project"{% if include.pool %} hidden{% endif %}>
+  {%- if p.image -%}
+  <a class="fi-media" href="{{ p.url | relative_url }}" aria-label="{{ p.name }}">
+    <img src="{{ p.image }}" alt="{{ p.name }}" loading="lazy" />
+    <span class="fi-overlay" aria-hidden="true"></span>
+    <span class="fi-view mono no-select" aria-hidden="true">VIEW <i class="fas fa-arrow-right"></i></span>
+  </a>
+  {%- endif -%}
+  <div class="fi-body">
+    <div class="fi-meta">
+      <span class="fi-index mono no-select">{{ include.index | prepend: '00' | slice: -2, 2 }}</span>
+      <span class="fi-category fi-category--project mono no-select">// PROJECT{% if p.status %} · {{ p.status }}{% endif %}</span>
+    </div>
+    <h3 class="fi-title"><a class="card-title-link" href="{{ p.url | relative_url }}">{{ p.name }}</a></h3>
+    <p class="fi-desc">{{ p.description }}</p>
+    {%- if p.tags and p.tags.size > 0 -%}
+    <div class="fi-tags">
+      {% include common/tag-chips.html tags=p.tags link_base="/portfolio/?tag=" %}
+    </div>
+    {%- endif -%}
+    {%- if p.external_links and p.external_links.size > 0 -%}
+    <div class="fi-links">
+      {% include common/external-links.html links=p.external_links %}
+    </div>
+    {%- endif -%}
+    <a class="fi-link mono" href="{{ p.url | relative_url }}">
+      {{ include.labels.read_project }} <i class="fas fa-arrow-right"></i>
+    </a>
+  </div>
+</article>

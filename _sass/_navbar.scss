@@ -1,0 +1,234 @@
+// ==========================================================
+// Navbar — HUD terminal command bar
+// ==========================================================
+
+@use "variables" as *;
+@use "mixins" as *;
+
+.navbar-themed {
+  padding: 0.9rem 0;
+  backdrop-filter: blur(14px) saturate(140%);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+  background: transparent;
+  border-bottom: 1px solid transparent;
+  transition: background $dur-base $ease-out-expo,
+              border-color $dur-base $ease-out-expo;
+
+  [data-theme="dark"] & { background: rgba($bg-void, 0.0); }
+
+  &.scrolled {
+    padding: 0.6rem 0;
+    @include themed(background, rgba($paper, 0.86), rgba($bg-void, 0.78));
+    @include themed(border-bottom-color, rgba($carbon, 0.18), rgba($phosphor, 0.22));
+    box-shadow: 0 1px 0 rgba($phosphor, 0.08);
+  }
+}
+
+// Brand — terminal prompt prefix
+.navbar-brand {
+  font-family: $font-mono;
+  font-weight: 700;
+  font-size: 0.95rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+
+// Title brackets on the <b> — same fade+slide reveal as the .nav-link brackets,
+// triggered on hover and when active (homepage = current route).
+.navbar-brand b {
+  position: relative;
+  transition: color $dur-fast $ease-out-expo;
+
+  &::before, &::after {
+    color: $phosphor;
+    opacity: 0;
+    position: absolute;
+    transition: opacity $dur-fast $ease-out-expo, transform $dur-fast $ease-out-expo;
+    [data-theme="light"] & { color: $print-phosphor; }
+  }
+  &::before { content: "[\00a0"; left: -0.5rem;  transform: translateX(-4px); }
+  &::after  { content: "\00a0]"; right: -0.5rem; transform: translateX(4px); }
+}
+
+.navbar-brand:hover b,
+.navbar-brand.active b,
+.navbar-brand:focus-visible b {
+  &::before, &::after { opacity: 1; transform: translateX(0); }
+}
+.navbar-brand.active b {
+  color: $phosphor;
+  [data-theme="light"] & { color: $print-phosphor; }
+}
+.navbar-brand:focus-visible { outline: none; }
+.navbar-brand:focus-visible b { color: $phosphor; [data-theme="light"] & { color: $print-phosphor; } }
+
+// Nav links — mono, framed brackets on hover
+.navbar-nav .nav-link {
+  font-family: $font-mono;
+  font-weight: 500;
+  font-size: 0.78rem;
+  letter-spacing: 0.10em;
+  text-transform: uppercase;
+  padding: 0.5rem 0.85rem !important;
+  position: relative;
+  transition: color $dur-fast $ease-out-expo;
+
+  &::before {
+    content: "[";
+    position: absolute;
+    left: 0.2rem;
+    opacity: 0;
+    color: $phosphor;
+    transition: opacity $dur-fast $ease-out-expo, transform $dur-fast $ease-out-expo;
+    transform: translateX(-4px);
+    [data-theme="light"] & { color: $print-phosphor; }
+  }
+  &::after {
+    content: "]";
+    position: absolute;
+    right: 0.2rem;
+    opacity: 0;
+    color: $phosphor;
+    transition: opacity $dur-fast $ease-out-expo, transform $dur-fast $ease-out-expo;
+    transform: translateX(4px);
+    [data-theme="light"] & { color: $print-phosphor; }
+  }
+
+  &:hover {
+    &::before, &::after { opacity: 1; transform: translateX(0); }
+  }
+
+  // Keyboard focus mirrors hover/active: brackets fade in + phosphor.
+  &:focus-visible {
+    outline: none;
+    color: $phosphor;
+    [data-theme="light"] & { color: $print-phosphor; }
+    &::before, &::after { opacity: 1; transform: translateX(0); }
+  }
+
+  &.active {
+    color: $phosphor !important;
+    [data-theme="light"] & { color: $print-phosphor !important; }
+    &::before, &::after { opacity: 1; transform: translateX(0); }
+  }
+}
+
+// Right-aligned action group — always visible (lives outside the collapse)
+.nav-right {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-left: auto;
+  flex-shrink: 0;
+}
+
+// Desktop: let the link column grow so the toggle clears the last nav link
+@media (min-width: 992px) {
+  .navbar-themed .navbar-collapse { flex-grow: 1; }
+  .nav-right { margin-left: 1.25rem; }
+}
+
+// Theme toggle — persistent VOID/SOLID chip (always visible, all viewports).
+// Same border-lightup language as the cards and the social icons: phosphor
+// edge traces in over $dur-lightup, with a 1px inset top highlight to
+// match the rest of the interactive system.
+#theme-toggler {
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  font-family: $font-mono;
+  font-size: 0.66rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  padding: 0.45rem 0.7rem;
+  background: rgba($phosphor, 0.06);
+  border: 1px solid rgba($phosphor, 0.35);
+  border-radius: $radius-xs;
+  color: $phosphor;
+  position: relative;
+  transition: transform    $dur-base    $ease-out-expo,
+              border-color $dur-lightup $ease-out-expo,
+              background   $dur-lightup $ease-out-expo,
+              color        $dur-lightup $ease-out-expo,
+              box-shadow   $dur-lightup $ease-out-expo;
+
+  // VOID in dark mode, SOLID in light mode
+  &::before {
+    content: "VOID";
+    [data-theme="light"] & { content: "SOLID"; }
+  }
+
+  [data-theme="light"] & {
+    background: transparent;
+    border-color: rgba($carbon, 0.30);
+    color: $carbon;
+  }
+
+  @include icon-hover($lift-y: -1px, $wash: 16%, $bloom: 16px, $bloom-alpha: 26%, $top: 38%);
+
+  &:active { transform: translateY(0) scale(0.96); }
+  &:focus-visible {
+    outline: 2px solid $phosphor;
+    outline-offset: 2px;
+  }
+}
+
+// Mobile menu toggler — mono icon
+.navbar-toggler {
+  border: 1px solid rgba($phosphor, 0.30) !important;
+  border-radius: $radius-xs !important;
+  padding: 0.35rem 0.6rem !important;
+  outline: none !important;
+  box-shadow: none !important;
+
+  .fa-bars { color: $phosphor; }
+  [data-theme="light"] & {
+    border-color: rgba($carbon, 0.35) !important;
+    .fa-bars { color: $carbon; }
+  }
+}
+
+// Mobile menu — vanilla collapse (no Bootstrap JS).
+// Toggled via .nav-open on #site-navbar; see initNavToggle() in main.js.
+@media (max-width: 991.98px) {
+  .navbar-themed .navbar-collapse {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height $dur-base $ease-out-expo;
+  }
+  .navbar-themed.nav-open .navbar-collapse { max-height: 22rem; }
+}
+
+// On mobile, frame the whole stacked menu with a single bracket pair
+// (mirrors the desktop per-link [ ] hover brackets, but at the container level
+// so one "[" ... "]" wraps the entire dropdown instead of each item).
+@media (max-width: 991.98px) {
+  .navbar-themed .navbar-nav {
+    position: relative;
+    padding: 1rem 1.25rem 1rem 1.4rem;
+    margin-top: 0.5rem;
+
+    &::before,
+    &::after {
+      font-family: $font-mono;
+      font-weight: 700;
+      font-size: 1.05rem;
+      color: $phosphor;
+      position: absolute;
+      opacity: 0.85;
+      [data-theme="light"] & { color: $print-phosphor; }
+    }
+    &::before { content: "["; left: 0.2rem;  top: 0.55rem; }
+    &::after  { content: "]"; right: 0.2rem; bottom: 0.55rem; }
+
+    // Suppress per-link hover brackets on mobile — the container frames all.
+    .nav-link {
+      padding: 0.6rem 0.25rem !important;
+      &::before, &::after { content: none; }
+    }
+  }
+}

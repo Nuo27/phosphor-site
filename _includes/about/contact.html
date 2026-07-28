@@ -1,0 +1,12 @@
+{% assign s = page.contact %}
+{% if s %}
+<section id="contact" class="reveal mb-5">
+  {% include common/section-head.html eyebrow=s.eyebrow title=s.title %}
+  <div class="contact-block">
+    {% if s.blurb %}<p class="contact-blurb">{{ s.blurb }}</p>{% endif %}
+    <div class="contact-social">
+      {% include social.html %}
+    </div>
+  </div>
+</section>
+{% endif %}

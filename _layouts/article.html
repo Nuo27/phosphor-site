@@ -1,0 +1,105 @@
+---
+layout: default
+---
+
+<div class="article-detail">
+  <section class="article-content-section">
+    <div class="container">
+      <div class="article-back-row">
+        {% if page.nested and page.parent_url %}
+        <a href="{{ page.parent_url }}" class="back-link">
+          <i class="fas fa-arrow-left"></i> Back to {{ page.parent_title }}
+        </a>
+        {% else %}
+        <a href="/articles/" class="back-link">
+          <i class="fas fa-arrow-left"></i> Back to Articles
+        </a>
+        {% endif %}
+      </div>
+
+      <header class="article-header">
+        <span class="article-eyebrow mono no-select">// {{ page.category | default: 'article' | upcase }}</span>
+        <h1 class="article-title">{{ page.title }}</h1>
+      </header>
+
+      {% if page.description or page.tags.size > 0 %}
+      <section class="article-deck">
+        <div class="deck-grid">
+          {% if page.description %}
+          <div class="deck-body" data-reveal>
+            <p class="deck-lead">{{ page.description }}</p>
+          </div>
+          {% endif %}
+          {% if page.tags.size > 0 %}
+          <div class="deck-meta" data-reveal>
+            <div class="deck-tags">
+              <span class="deck-label mono no-select">TAGS</span>
+              <div class="deck-tags-row">
+                {% include common/tag-chips.html tags=page.tags link_base="/articles/?tag=" %}
+              </div>
+            </div>
+          </div>
+          {% endif %}
+        </div>
+      </section>
+      {% endif %}
+
+      <div class="markdown-body article-body">
+        {{ content }}
+      </div>
+    </div>
+  </section>
+
+  <section class="article-footer-section">
+    <div class="container">
+      <a href="/articles/" class="back-link">
+        <i class="fas fa-arrow-left"></i> Back to Articles
+      </a>
+    </div>
+  </section>
+</div>
+
+<style>
+  /* Article-detail page. Shared deck + back-link + reading-column
+     typography live in _sass/_detail.scss and _sass/_markdown.scss;
+     only the article-specific chrome remains here. */
+
+  .article-detail { padding-bottom: 4rem; }
+
+  .article-back-row { padding: 1rem 0; }
+
+  /* ---- Header ---- */
+  .article-header {
+    margin: 1rem 0 0;
+    padding-bottom: 1.75rem;
+  }
+  .article-eyebrow {
+    display: block;
+    font-size: 0.65rem;
+    color: var(--cyan);
+    letter-spacing: 0.2em;
+    margin-bottom: 0.7rem;
+  }
+  .article-title {
+    font-family: var(--font-serif);
+    font-size: clamp(1.9rem, 5.2vw, 2.9rem);
+    font-weight: 600;
+    margin: 0;
+    color: var(--ink);
+    letter-spacing: -0.02em;
+    line-height: 1.08;
+    text-transform: none;
+    text-wrap: balance;
+    font-feature-settings: "liga", "kern";
+  }
+
+  /* ---- Deck wrapper padding (grid + meta are shared) ---- */
+  .article-deck { padding: 3rem 0 2.5rem; }
+
+  /* ---- Footer back-link row ---- */
+  .article-footer-section {
+    padding: 2rem 0;
+    border-top: 1px solid color-mix(in srgb, var(--phosphor-soft) 24%, transparent);
+    margin-top: 3rem;
+  }
+</style>

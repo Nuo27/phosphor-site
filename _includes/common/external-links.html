@@ -1,0 +1,13 @@
+{%- comment -%}
+  Reusable external link list. Consumed by the stream project card (small chips)
+  and the project detail deck (CTA buttons). Params:
+    links      -> array of { name, url, icon?, prefix? }
+    item_class -> anchor class (default: "fi-ext mono")
+    magnetic   -> add data-magnetic (for CTA-style buttons)
+  icon is a bare Font Awesome name; prefix defaults to "fas" (use "fab" for brands).
+{%- endcomment -%}
+{%- for link in include.links -%}
+  <a class="{{ include.item_class | default: 'fi-ext mono' }}" href="{{ link.url }}" target="_blank" rel="noopener"{% if include.magnetic %} data-magnetic{% endif %}>
+    {{ link.name }}{% if link.icon %} <i class="{{ link.prefix | default: 'fas' }} fa-{{ link.icon }}"></i>{% endif %}
+  </a>
+{%- endfor -%}

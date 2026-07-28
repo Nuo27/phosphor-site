@@ -1,0 +1,168 @@
+// ==========================================================
+// Theme — dark (primary) + light (blueprint print) modes
+// `themed` mixin is defined in _mixins.scss
+// ==========================================================
+
+@use "variables" as *;
+@use "mixins" as *;
+
+// Theme toggle glyph
+#theme-toggler:before {
+  @include themed(content, "SOLID", "VOID");
+  font-family: $font-mono;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  padding: 0.25rem 0.5rem;
+  border: 1px solid;
+  @include themed(border-color, rgba($carbon, 0.35), rgba($phosphor, 0.45));
+  @include themed(color, $carbon, $phosphor);
+  @include themed(background, transparent, rgba($phosphor, 0.04));
+  transition: background $dur-fast $ease-out-expo, border-color $dur-fast $ease-out-expo, color $dur-fast $ease-out-expo;
+}
+#theme-toggler:hover:before {
+  @include themed(background, rgba($carbon, 0.05), rgba($phosphor, 0.10));
+}
+
+// ---- Navbar themed ----
+.navbar-themed {
+  .navbar-brand,
+  .navbar-nav .nav-link.active {
+    @include themed(color, $carbon, $ink);
+  }
+  .navbar-nav .nav-link {
+    @include themed(color, $carbon-mut, $ink-mut);
+    &.is-hover, &:hover { @include themed(color, $carbon, $ink); }
+  }
+}
+
+// ==========================================================
+// Dark mode (default aesthetic)
+// ==========================================================
+[data-theme="dark"] {
+  color: $ink !important;
+
+  h1, h2, h3, h4, h5, h6,
+  .h1, .h2, .h3, .h4, .h5, .h6 { color: $ink !important; }
+
+  .text-muted { color: $ink-mut !important; }
+
+  // Links only — buttons (btn-primary-custom / btn-secondary-custom / .btn)
+  // carry their own text colors and must not inherit the phosphor hover here.
+  a:not([class*="btn"]) {
+    color: $cyan;
+    &.is-hover, &:hover { color: $phosphor; }
+  }
+
+  // Cards — terminal panels w/ hairline borders
+  .card {
+    background-color: $bg-surface;
+    border: 1px solid rgba($ink, 0.10);
+    color: $ink;
+  }
+  .card-body { color: rgba($ink, 0.86); }
+  .card-title { color: $ink !important; }
+
+  .project.card, .post.card {
+    background-color: $bg-surface;
+    border-color: rgba($ink, 0.10);
+  }
+
+  // Same scope as _footer.scss — page footer only, not section footers.
+  #smooth-scroll > footer {
+    border-top-color: rgba($phosphor, 0.20);
+    color: $ink-mut;
+  }
+
+  .bg-themed { background-color: transparent !important; }
+
+  .timeline-body { background-color: transparent !important; }
+
+  .btn-outline-primary {
+    color: $phosphor;
+    border-color: $phosphor;
+    &.is-hover, &:hover {
+      background-color: $phosphor;
+      color: $bg-void;
+    }
+    &:focus-visible {
+      outline: none;
+      box-shadow: 0 0 0 2px rgba($phosphor, 0.55);
+    }
+  }
+}
+
+// ==========================================================
+// Light mode (blueprint print substrate)
+// ==========================================================
+[data-theme="light"] {
+  .card {
+    background-color: $paper-raised;
+    border: 1px solid rgba($carbon, 0.18);
+  }
+  .project.card, .post.card {
+    background-color: $paper-raised;
+    border-color: rgba($carbon, 0.18);
+  }
+}
+
+// ---- Body background ----
+body {
+  @include themed(background-color, $paper, $bg-void);
+  @include themed(color, $carbon, $ink);
+  transition: background-color $dur-base $ease-out-expo, color $dur-base $ease-out-expo;
+}
+
+// Substrate depth — fixed spotlight gradient (lifted crown → deep edges).
+// Gives the page the quiet volumetric depth of premium product sites.
+[data-theme="dark"] body {
+  background-image: radial-gradient(ellipse 130% 85% at 50% -18%, #14171F 0%, $bg-void 48%, $bg-deep 100%);
+  background-attachment: fixed;
+}
+[data-theme="light"] body {
+  background-image: radial-gradient(ellipse 130% 85% at 50% -18%, $paper-raised 0%, $paper 52%, $paper-deep 100%);
+  background-attachment: fixed;
+}
+
+// Faint blueprint grid on body
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-image:
+    linear-gradient(rgba($phosphor, 0.016) 1px, transparent 1px),
+    linear-gradient(90deg, rgba($phosphor, 0.016) 1px, transparent 1px);
+  background-size: 64px 64px;
+
+  [data-theme="light"] & {
+    background-image:
+      linear-gradient(rgba($carbon, 0.028) 1px, transparent 1px),
+      linear-gradient(90deg, rgba($carbon, 0.028) 1px, transparent 1px);
+  }
+}
+
+// ==========================================================
+// Mobile — match the theme toggler to the navbar toggler size
+// (placed here in _theme.scss so it wins the cascade)
+// ==========================================================
+@media (max-width: 991.98px) {
+  #theme-toggler,
+  .navbar-toggler {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    height: 32px !important;
+    padding: 0 0.6rem !important;
+  }
+  // Collapse the nested ::before chip to plain text so only the outer
+  // button frame shows — a single compact chip matching the hamburger.
+  #theme-toggler:before {
+    font-size: 0.56rem;
+    padding: 0;
+    border: none;
+    background: transparent !important;
+    letter-spacing: 0.1em;
+  }
+}

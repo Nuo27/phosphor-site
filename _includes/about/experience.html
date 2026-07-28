@@ -1,0 +1,7 @@
+{% assign s = page.experience %}
+{% if s %}
+<section class="reveal mb-5">
+  {% include common/section-head.html eyebrow=s.eyebrow title=s.title %}
+  {% include about/timeline.html items=s.items %}
+</section>
+{% endif %}

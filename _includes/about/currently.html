@@ -1,0 +1,14 @@
+{% assign s = page.currently %}
+{% if s %}
+<section class="reveal mb-5">
+  {% include common/section-head.html eyebrow=s.eyebrow title=s.title %}
+  <div class="now-grid">
+    {% for item in s.items %}
+      <div class="now-item">
+        <span class="now-label mono no-select">{{ item.label }}</span>
+        <span class="now-value{% if item.placeholder %} placeholder{% endif %}">{% if item.placeholder %}[ {% endif %}{{ item.value }}{% if item.placeholder %} ]{% endif %}</span>
+      </div>
+    {% endfor %}
+  </div>
+</section>
+{% endif %}

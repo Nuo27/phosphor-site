@@ -1,0 +1,72 @@
+// ==========================================================
+// Tokens — CSS custom properties (runtime theme variables)
+// Mirrors _variables.scss so inline <style> blocks (which can't
+// see SCSS vars) share one source of truth. Resolved per-theme.
+// Must load before component partials that reference var(--…).
+// ==========================================================
+
+@use "variables" as *;
+
+:root {
+  // --- Substrate (dark / default aesthetic) ---
+  --bg-void:      #{$bg-void};
+  --bg-surface:   #{$bg-surface};
+  --bg-raised:    #{$bg-raised};
+  --bg-overlay:   #{$bg-overlay};
+  --bg-deep:      #{$bg-deep};
+
+  // --- Ink ---
+  --ink:          #{$ink};
+  --ink-mut:      #{$ink-mut};
+  --ink-faint:    #{$ink-faint};
+
+  // --- Accents (2-stop phosphor) ---
+  --phosphor:        #{$phosphor};
+  --phosphor-bright: #{$phosphor-bright};
+  --phosphor-soft:   #{$phosphor-soft};
+  --cyan:            #{$cyan};
+  --hazard:          #{$hazard};
+  --amber:           #{$amber};
+  --violet:          #{$violet};
+
+  // --- Geometry ---
+  --radius-xs: #{$radius-xs};
+  --radius-sm: #{$radius-sm};
+  --radius-md: #{$radius-md};
+  --radius-lg: #{$radius-lg};
+
+  // --- Type ---
+  --font-serif:  #{$font-serif};
+  --font-display: #{$font-display};
+  --font-body:    #{$font-body};
+  --font-mono:    #{$font-mono};
+
+  // --- Motion (theme-agnostic; exposed so inline <style> blocks share the system) ---
+  --dur-fast:      #{$dur-fast};
+  --dur-base:      #{$dur-base};
+  --dur-slow:      #{$dur-slow};
+  --dur-cine:      #{$dur-cine};
+  --dur-lightup:   #{$dur-lightup};
+  --ease-out-expo: #{$ease-out-expo};
+  --ease-out-back: #{$ease-out-back};
+  --ease-in-out:   #{$ease-in-out};
+}
+
+// --- Light theme (blueprint print substrate) overrides ---
+// Substrate tokens remap to paper so inline blocks theme correctly.
+[data-theme="light"] {
+  --bg-void:      #{$paper};
+  --bg-surface:   #{$paper-surface};
+  --bg-raised:    #{$paper-raised};
+  --bg-overlay:   #{$paper-raised};
+  --bg-deep:      #{$paper-deep};
+
+  --ink:          #{$carbon};
+  --ink-mut:      #{$carbon-mut};
+  --ink-faint:    #{$carbon-faint};
+
+  --phosphor:        #{$print-phosphor};
+  --phosphor-bright: #{$print-phosphor};
+  --phosphor-soft:   #{$print-phosphor-soft};
+  --cyan:            #{$print-cyan};
+}

@@ -1,0 +1,14 @@
+{% assign items = include.items %}
+<div class="timeline-body bg-themed">
+  {% for item in items %}
+    <div class="timeline-item side-{% cycle 'left', 'right' %} reveal" style="transition-delay: {{ forloop.index0 | times: 120 }}ms;">
+      <div class="timeline-marker"></div>
+      <div class="timeline-content">
+        <span class="timeline-index mono no-select">// {{ forloop.index | prepend: '00' | slice: -2, 2 }}</span>
+        <h2 class="timeline-title">{{ item.title }}</h2>
+        <h6 class="timeline-date mono no-select">{{ item.from }} - {{ item.to }}</h6>
+        <p class="timeline-description">{{ item.description }}</p>
+      </div>
+    </div>
+  {% endfor %}
+</div>

@@ -1,0 +1,158 @@
+// ==========================================================
+// Custom cursor — inverted triangle + blend-difference ring + aurora.
+// JS (assets/js/cursor.js) owns per-frame transforms; CSS owns decorative
+// layer states via .is-* classes and :has()-driven visuals.
+// ==========================================================
+
+/* native cursor hidden the instant .custom-cursor is added */
+html.custom-cursor,
+html.custom-cursor * { cursor: none !important; }
+
+#cursor-root {
+  position: fixed; top: 0; left: 0; pointer-events: none;
+  z-index: 10003; opacity: 0; will-change: transform;
+  --glow: 0.16; --cursor-outline-scale: 0.7;
+}
+.cursor-body { position: absolute; top: 0; left: 0; transform-origin: 0 0; will-change: transform; }
+
+.cursor-glow {
+  position: absolute; top: -19px; left: -19px; width: 48px; height: 48px; border-radius: 50%;
+  background: radial-gradient(circle, color-mix(in srgb, var(--phosphor) 90%, transparent) 0%, transparent 65%);
+  filter: blur(7px); opacity: var(--glow); transition: opacity 0.3s ease;
+}
+
+.cursor-trail {
+  position: absolute; top: 0; left: 0; width: 14px; height: 14px;
+  background: var(--phosphor); clip-path: polygon(0 0, 100% 0, 0 100%);
+  opacity: 0; will-change: transform, opacity;
+}
+
+.cursor-vector { position: absolute; top: 0; left: 0; width: 40px; height: 40px; overflow: visible; display: block; isolation: isolate; }
+
+/* ---- Invert ring (sibling of #cursor-root so its fill's
+       mix-blend-mode reaches the page, not just the cursor's own
+       stacking context). A mask carves a triangular ring: the outer
+       triangle scales with --cursor-outline-scale from its centroid
+       (locked to .cursor-outline), the inner hole stays fixed at the
+       .cursor-core boundary so the cut-out always aligns with the
+       tip. White fill + difference inverts page color in the ring
+       only; the inner triangle keeps the cursor's own styling. ---- */
+.cursor-spot {
+  position: fixed; top: 0; left: 0;
+  width: 40px; height: 40px;
+  pointer-events: none;
+  opacity: 0;
+  z-index: 10002;
+  overflow: visible;
+  transform-origin: 0 0;          /* rotate around apex like the cursor body */
+  transition: opacity 0.34s ease;
+  will-change: transform;
+}
+.cursor-spot-fill {
+  /* Pure white is a blend-mode constant, not a palette colour: difference
+     inverts whatever sits behind the ring, so the fill must stay #fff. */
+  fill: #FFFFFF;
+  mix-blend-mode: difference;
+}
+.cursor-ring-outer {
+  transform: scale(var(--cursor-outline-scale));
+  transform-box: fill-box; transform-origin: 33.333% 33.333%;
+  transition: transform 0.34s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Hover: ring fades in. Expansion is driven by --cursor-outline-scale
+   — the same var the cursor's outline + aurora use — so the ring,
+   border, and aurora grow together from the centroid as one object. */
+#cursor-root.is-hover ~ .cursor-spot { opacity: 1; }
+
+.cursor-aurora-outer-halo,
+.cursor-aurora-outer-core {
+  fill: none; stroke: var(--phosphor-bright); stroke-width: 1.4; stroke-linecap: round; stroke-linejoin: round;
+  stroke-dasharray: 0.16 0.84; animation: cursor-flow 2.8s linear infinite;
+  transform-box: fill-box; transform-origin: 33.333% 33.333%; transform: scale(var(--cursor-outline-scale));
+  opacity: 0; transition: opacity 0.34s ease, stroke-width 0.3s ease;
+}
+.cursor-aurora-outer-halo { stroke-width: 4; filter: blur(3px); }
+
+.cursor-aurora-inner {
+  fill: none; stroke: var(--bg-deep); stroke-opacity: 0.7; stroke-width: 1.2; stroke-linecap: round; stroke-linejoin: round;
+  stroke-dasharray: 0.16 0.84; animation: cursor-flow 2.8s linear infinite;
+  mix-blend-mode: multiply; opacity: 0.85; transition: opacity 0.3s ease;
+}
+
+.cursor-outline {
+  fill: none; stroke: var(--phosphor); stroke-width: 1; stroke-linejoin: round;
+  transform-box: fill-box; transform-origin: 33.333% 33.333%; transform: scale(var(--cursor-outline-scale));
+  opacity: 0.18; transition: transform 0.34s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.34s cubic-bezier(0.16, 1, 0.3, 1), stroke-width 0.3s ease;
+}
+
+.cursor-core { fill: var(--phosphor); stroke: none; transition: fill 0.3s ease, stroke 0.3s ease; }
+
+/* ---- interaction states ---- */
+#cursor-root.is-hover { --glow: 0.42; --cursor-outline-scale: 1; }
+#cursor-root.is-hover .cursor-outline { opacity: 0.9; }
+#cursor-root.is-hover .cursor-aurora-outer-halo { opacity: 0.85; }
+#cursor-root.is-hover .cursor-aurora-outer-core { opacity: 0.95; }
+#cursor-root.is-hover .cursor-aurora-inner { opacity: 0; }
+#cursor-root.is-hover .cursor-core { fill: transparent; stroke: var(--phosphor); stroke-width: 1.4; }
+
+#cursor-root.is-zoom { --glow: 0.55; --cursor-outline-scale: 1.12; }
+#cursor-root.is-zoom .cursor-outline { opacity: 1; }
+#cursor-root.is-zoom .cursor-aurora-outer-halo { opacity: 0.9; }
+#cursor-root.is-zoom .cursor-aurora-outer-core { opacity: 1; }
+
+#cursor-root.is-down { --glow: 0.6; }
+#cursor-root.is-down .cursor-outline { stroke-width: 1.6; }
+#cursor-root.is-drag .cursor-aurora-inner { opacity: 1; }
+#cursor-root.is-pulse .cursor-outline { animation: cursor-pulse 1.15s ease-in-out infinite; }
+
+/* ---- :has()-driven cursor visuals — Pattern D.
+   Browser tracks :hover through scroll, layout, and DOM mutations
+   for free, so cursor visuals stay synced with zero JS. Mirrors
+   the .is-hover/.is-zoom/.is-pulse class rules above; the class
+   paths remain as fallback for older browsers without :has()
+   support. JS still owns .is-down/.is-drag (input state) and
+   .is-zoom (renderer internal stateMul needs the local zoom flag). */
+html:has(a:hover, button:hover, label[for]:hover, .nav-link:hover,
+         .social:hover, .skill-tag:hover, input:hover, textarea:hover,
+         [data-cursor="hover"]:hover, [contenteditable]:hover) #cursor-root { --glow: 0.42; --cursor-outline-scale: 1; }
+html:has(a:hover, button:hover, label[for]:hover, .nav-link:hover,
+         .social:hover, .skill-tag:hover, input:hover, textarea:hover,
+         [data-cursor="hover"]:hover, [contenteditable]:hover) #cursor-root .cursor-outline { opacity: 0.9; }
+html:has(a:hover, button:hover, label[for]:hover, .nav-link:hover,
+         .social:hover, .skill-tag:hover, input:hover, textarea:hover,
+         [data-cursor="hover"]:hover, [contenteditable]:hover) #cursor-root .cursor-aurora-outer-halo { opacity: 0.85; }
+html:has(a:hover, button:hover, label[for]:hover, .nav-link:hover,
+         .social:hover, .skill-tag:hover, input:hover, textarea:hover,
+         [data-cursor="hover"]:hover, [contenteditable]:hover) #cursor-root .cursor-aurora-outer-core { opacity: 0.95; }
+html:has(a:hover, button:hover, label[for]:hover, .nav-link:hover,
+         .social:hover, .skill-tag:hover, input:hover, textarea:hover,
+         [data-cursor="hover"]:hover, [contenteditable]:hover) #cursor-root .cursor-aurora-inner { opacity: 0; }
+html:has(a:hover, button:hover, label[for]:hover, .nav-link:hover,
+         .social:hover, .skill-tag:hover, input:hover, textarea:hover,
+         [data-cursor="hover"]:hover, [contenteditable]:hover) #cursor-root .cursor-core {
+  fill: transparent; stroke: var(--phosphor); stroke-width: 1.4;
+}
+html:has(a:hover, button:hover, [role="button"]:hover,
+         .btn-primary-custom:hover, .btn-secondary-custom:hover,
+         .btn-project:hover, [data-magnetic]:hover) #cursor-root .cursor-outline {
+  animation: cursor-pulse 1.15s ease-in-out infinite;
+}
+html:has(.gallery-slide:hover, [data-lightbox]:hover,
+         .featured-item--project img:hover, [data-cursor="zoom"]:hover) #cursor-root { --glow: 0.55; --cursor-outline-scale: 1.12; }
+html:has(.gallery-slide:hover, [data-lightbox]:hover,
+         .featured-item--project img:hover, [data-cursor="zoom"]:hover) #cursor-root .cursor-outline { opacity: 1; }
+html:has(.gallery-slide:hover, [data-lightbox]:hover,
+         .featured-item--project img:hover, [data-cursor="zoom"]:hover) #cursor-root .cursor-aurora-outer-halo { opacity: 0.9; }
+html:has(.gallery-slide:hover, [data-lightbox]:hover,
+         .featured-item--project img:hover, [data-cursor="zoom"]:hover) #cursor-root .cursor-aurora-outer-core { opacity: 1; }
+
+@keyframes cursor-flow { from { stroke-dashoffset: 1; } to { stroke-dashoffset: 0; } }
+@keyframes cursor-pulse {
+  0%, 100% { transform: scale(var(--cursor-outline-scale)); }
+  50%      { transform: scale(calc(var(--cursor-outline-scale) * 1.06)); }
+}
+
+/* belt-and-suspenders: the JS gate also returns early on these */
+@media (hover: none), (pointer: coarse) { #cursor-root, .cursor-spot { display: none !important; } }
+@media (prefers-reduced-motion: reduce) { #cursor-root, .cursor-spot { display: none !important; } }

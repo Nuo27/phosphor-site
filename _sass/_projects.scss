@@ -1,0 +1,488 @@
+// ==========================================================
+// Portfolio grid — editorial layout with refined project cards
+// ==========================================================
+
+@use "variables" as *;
+@use "mixins" as *;
+
+.projects-section {
+  padding: 5rem 0 6rem;
+}
+
+.projects-header {
+  margin-bottom: 3.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.projects-subtitle {
+  font-family: $font-serif;
+  font-size: clamp(1.05rem, 1.6vw, 1.25rem);
+  font-weight: 400;
+  line-height: 1.55;
+  color: var(--ink-mut);
+  margin: 0.25rem 0 0;
+  max-width: 44ch;
+  font-feature-settings: "liga", "kern";
+}
+
+// .title-prompt (blinking cursor) lives in _base.scss — one shared rule.
+
+// ---- Editorial responsive grid ----
+.projects-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2.25rem;
+  @media (min-width: 600px) { grid-template-columns: repeat(2, 1fr); }
+  @media (min-width: 1000px) { grid-template-columns: repeat(3, 1fr); gap: 2.5rem; }
+}
+
+// ---- Project card ----
+.project.card {
+  display: flex;
+  flex-direction: column;
+  text-decoration: none !important;
+  border-radius: $radius-md;
+  border: 1px solid color-mix(in srgb, var(--ink) 10%, transparent);
+  background: var(--bg-surface);
+  overflow: hidden;
+  position: relative;
+  // transform stays at $dur-base (the lift); border-color + box-shadow use
+  // $dur-lightup so the edge feels like it ignites after the card rises.
+  transition: transform 0.18s $ease-out-expo,
+              border-color 0.2s $ease-out-expo,
+              box-shadow   0.2s $ease-out-expo;
+
+  // Premium entrance: a phosphor light traces from the cursor's entry
+  // angle around the perimeter on hover-enter (~0.85s), then dissolves
+  // into the steady-state phosphor-soft + bloom. Visibility is gated
+  // entirely on `.is-traced` (set by the resolver) — never on CSS
+  // `:hover::before` — so the resolver stays the single source of
+  // truth for this card's animated state.
+  @include border-trace;
+  [data-theme="light"] & {
+    background: $paper-raised;
+    border-color: rgba($carbon, 0.16);
+  }
+
+  // Hover triggers via JS-managed .is-hover only. CSS :hover removed
+  // because Chromium 149 doesn't update it during scroll, causing
+  // stale hover on the first card. The border-trace pseudo above
+  // remains JS-only because its entry angle depends on cursor geometry.
+  &.is-hover {
+    transform: translateY(-6px);
+    border-color: var(--phosphor-soft);
+    @include border-lightup(0 22px 50px rgba(0, 0, 0, 0.4));
+    [data-theme="light"] & {
+      @include border-lightup(0 22px 40px rgba($carbon, 0.16));
+      border-color: $print-phosphor-soft;
+    }
+    .card-img { transform: scale(1.06); filter: grayscale(0) contrast(1.06); }
+    .card-arrow { opacity: 1; transform: translateX(0); }
+  }
+
+  // Press is a separate transient state (pointerdown/up), not hover.
+  &:active {
+    transform: translateY(0) scale(0.98);
+    transition: transform 0.12s $ease-out-expo;
+  }
+
+  // Keyboard focus — same phosphor chassis as hover (border + bloom +
+  // arrow reveal), without the lift so focus never shifts content. The
+  // stretched title link is the tab target; :focus-within lights the card.
+  &:focus-within {
+    border-color: var(--phosphor-soft);
+    @include border-lightup(0 22px 50px rgba(0, 0, 0, 0.4));
+    [data-theme="light"] & {
+      @include border-lightup(0 22px 40px rgba($carbon, 0.16));
+      border-color: $print-phosphor-soft;
+    }
+    .card-arrow { opacity: 1; transform: translateX(0); color: var(--phosphor); }
+  }
+}
+
+.card-media {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  overflow: hidden;
+  padding: 0.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-raised);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--ink) 6%, transparent);
+  [data-theme="light"] & { background: rgba($carbon, 0.10); }
+}
+.card-img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+  filter: grayscale(0.25) contrast(1.04);
+  transition: transform 0.18s $ease-out-expo, filter 0.18s $ease-out-expo;
+}
+.card-arrow {
+  position: absolute;
+  bottom: 12px;
+  right: 12px;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.78rem;
+  color: var(--ink);
+  background: color-mix(in srgb, var(--bg-void) 55%, transparent);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  opacity: 0;
+  transform: translateX(6px);
+  transition: opacity 0.18s $ease-out-expo, transform 0.18s $ease-out-expo, color 0.12s $ease-out-expo;
+}
+.project.card.is-hover .card-arrow { color: var(--phosphor); }
+
+.card-body {
+  padding: 1.35rem 1.4rem 1.45rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  flex: 1;
+}
+
+.card-index {
+  display: block;
+  font-size: 0.62rem;
+  letter-spacing: 0.2em;
+  color: var(--phosphor);
+  margin-bottom: 0.5rem;
+  [data-theme="light"] & { color: $print-phosphor; }
+}
+
+.card-title {
+  font-family: $font-serif;
+  font-size: clamp(1.35rem, 2vw, 1.6rem);
+  font-weight: 500;
+  letter-spacing: -0.018em;
+  line-height: 1.15;
+  color: var(--ink);
+  margin: 0;
+  text-transform: none;
+  [data-theme="light"] & { color: $carbon; }
+}
+
+.card-desc {
+  font-size: 0.92rem;
+  line-height: 1.55;
+  color: var(--ink-mut);
+  margin: 0;
+  [data-theme="light"] & { color: $carbon-mut; }
+}
+
+.card-tools {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin-top: auto;
+  padding-top: 0.4rem;
+}
+
+// ---- Card tags row (student-work accent etc.) ----
+.card-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  padding-top: 0.1rem;
+}
+// Tag chips ride above the stretched link so each is independently clickable.
+.card-tags .tag-chip { position: relative; z-index: 2; }
+// Whole-card click target (the title anchor stretches via ::after to cover
+// the card; tag chips above stay separate links).
+.card-stretched-link::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+}
+// Link variant of .tag-chip (cards + detail) — behaves like the span but
+// is a real anchor.
+.tag-chip--link {
+  text-decoration: none;
+  cursor: pointer;
+}
+
+// ---- Tag chip (shared: project cards, project detail, hero skills, article cards) ----
+// Substrate + hover come from the shared chip() / chip-hover() mixins in
+// _mixins.scss (the site's ONE chip base). Only the signature shine sweep
+// lives here.
+.tag-chip {
+  @include chip(0.22rem 0.55rem, 0.65rem);
+  position: relative;
+  overflow: hidden;
+  cursor: default;
+
+  &::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      115deg,
+      transparent 0%,
+      transparent 38%,
+      rgba($phosphor, 0.22) 50%,
+      transparent 62%,
+      transparent 100%
+    );
+    transform: translateX(-120%);
+    transition: transform 0.9s $ease-out-expo;
+    pointer-events: none;
+  }
+
+  @include chip-hover;
+  @include focus-ring(14px, 30%);
+  &.is-hover::before, &:hover::before { transform: translateX(120%); }
+
+  [data-theme="light"] &::before {
+    background: linear-gradient(115deg, transparent 0%, transparent 38%, rgba($carbon, 0.18) 50%, transparent 62%, transparent 100%);
+  }
+}
+
+// Distinct accent for featured tags — subtle pulse + dashed corner
+.tag-chip--accent {
+  border-color: rgba($cyan, 0.42);
+  color: var(--cyan);
+  background: rgba($cyan, 0.06);
+  animation: tag-pulse 5s ease-in-out infinite;
+  [data-theme="light"] & {
+    border-color: rgba($print-cyan, 0.5);
+    color: $print-cyan;
+    background: rgba($print-cyan, 0.06);
+  }
+}
+@keyframes tag-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba($cyan, 0.0); }
+  50%      { box-shadow: 0 0 10px 0 rgba($cyan, 0.14); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .tag-chip,
+  .tag-chip--accent,
+  .tag-chip::before { transition: none !important; animation: none !important; }
+  .tag-chip.is-hover::before, .tag-chip:hover::before { transform: translateX(-120%); }
+}
+
+// ---- Card wrapper (positioning context, reserved for future overlays) ----
+.card-wrap {
+  position: relative;
+}
+
+// ==========================================================
+// Category filter bar (portfolio)
+// ==========================================================
+.cat-filter {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.6rem 1rem;
+  margin: 1.5rem 0 2.5rem;
+  padding-bottom: 1.4rem;
+  border-bottom: 1px solid color-mix(in srgb, var(--ink) 10%, transparent);
+}
+.cat-filter__label {
+  font-size: 0.62rem;
+  letter-spacing: 0.2em;
+  color: var(--phosphor);
+  [data-theme="light"] & { color: $print-phosphor; }
+}
+.cat-filter__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+}
+.cat-chip {
+  font-family: $font-mono;
+  appearance: none;
+  background: transparent;
+  border: 1px solid color-mix(in srgb, var(--ink) 14%, transparent);
+  color: var(--ink-mut);
+  padding: 0.3rem 0.7rem;
+  border-radius: $radius-xs;
+  font-size: 0.66rem;
+  letter-spacing: 0.1em;
+  line-height: 1.4;
+  cursor: pointer;
+  transition: color $dur-fast $ease-out-expo,
+              border-color $dur-fast $ease-out-expo,
+              background $dur-fast $ease-out-expo,
+              transform $dur-fast $ease-out-back;
+  @include focus-ring(16px, 30%);
+  &.is-hover, &:hover {
+    color: var(--phosphor);
+    border-color: var(--phosphor-soft);
+    transform: translateY(-1px);
+  }
+  &.is-active {
+    color: var(--bg-void);
+    background: var(--phosphor);
+    border-color: var(--phosphor);
+    [data-theme="light"] & {
+      color: $paper;
+      background: $print-phosphor;
+      border-color: $print-phosphor;
+    }
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .cat-chip { transition: none !important; transform: none !important; }
+}
+
+// ---- Card kicker row (index + category) ----
+.card-kicker {
+  display: flex;
+  align-items: baseline;
+  gap: 0.6rem;
+  margin-bottom: 0.5rem;
+}
+.card-cat {
+  font-size: 0.62rem;
+  letter-spacing: 0.18em;
+  color: var(--ink-mut);
+  [data-theme="light"] & { color: $carbon-mut; }
+}
+
+// ==========================================================
+// Visibility system — hidden-by-default & half-hidden cards
+// ==========================================================
+// Cards flagged data-visibility="hidden" (e.g. archived work) stay collapsed
+// until JS adds .unhidden (driven by the per-key togglers above the grid).
+.card-wrap[data-visibility="hidden"]:not(.unhidden) {
+  display: none;
+}
+
+// Half-hidden: present but de-emphasized.
+.card-wrap[data-visibility="dimmed"] .project.card {
+  opacity: 0.62;
+  filter: saturate(0.7);
+  transition: transform $dur-base $ease-out-expo,
+              border-color $dur-base $ease-out-expo,
+              box-shadow $dur-base $ease-out-expo,
+              opacity $dur-base $ease-out-expo,
+              filter $dur-base $ease-out-expo;
+}
+.card-wrap[data-visibility="dimmed"]:hover .project.card {
+  opacity: 0.9;
+  filter: saturate(1);
+}
+
+// ---- Tag-toggle chips — inclusive reveal filters (one per hidden key),
+// right-aligned on the filter row. Cyan variant distinguishes them from the
+// exclusive green category chips; they share the .cat-chip base + animations.
+.visibility-toggles {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.45rem;
+  margin-left: auto;
+  justify-content: flex-end;
+}
+.visibility-toggles .cat-filter__label {
+  color: var(--cyan);
+  [data-theme="light"] & { color: $print-cyan; }
+}
+.cat-chip--toggle {
+  border-color: color-mix(in srgb, var(--cyan) 28%, transparent);
+  color: var(--cyan);
+  [data-theme="light"] & {
+    border-color: rgba($print-cyan, 0.42);
+    color: $print-cyan;
+  }
+  &.is-hover, &:hover {
+    color: var(--cyan);
+    border-color: var(--cyan);
+  }
+  &.is-active {
+    color: var(--bg-void);
+    background: var(--cyan);
+    border-color: var(--cyan);
+    [data-theme="light"] & {
+      color: $paper;
+      background: $print-cyan;
+      border-color: $print-cyan;
+    }
+  }
+}
+.cat-chip__count {
+  margin-left: 0.4rem;
+  opacity: 0.55;
+  font-size: 0.9em;
+}
+@media (prefers-reduced-motion: reduce) {
+  .card-wrap[data-visibility="dimmed"] .project.card { transition: none !important; }
+}
+
+// ==========================================================
+// Premium activation — filter chips (categories & tag toggles)
+// ==========================================================
+.cat-chip {
+  position: relative;
+  overflow: hidden;
+}
+.cat-chip::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  transform: translateX(-130%);
+  background: linear-gradient(115deg,
+    transparent 38%,
+    rgba(255, 255, 255, 0.32) 50%,
+    transparent 62%);
+}
+// Shine sweep plays once the moment a chip becomes active.
+.cat-chip.is-active::after {
+  animation: chip-shine 0.7s cubic-bezier(.16, 1, .3, 1);
+}
+// Overshoot pop on activation.
+.cat-chip.is-active {
+  animation: chip-pop 0.34s cubic-bezier(.2, .9, .3, 1.5);
+}
+// Outro — mirrors the intro as .is-active is removed: a reverse-direction
+// shine sweep + a small release dip.
+.cat-chip.is-outro::after {
+  animation: chip-shine-rev 0.6s cubic-bezier(.16, 1, .3, 1);
+}
+.cat-chip.is-outro {
+  animation: chip-out 0.34s cubic-bezier(.2, .9, .3, 1);
+}
+@keyframes chip-shine { to { transform: translateX(130%); } }
+@keyframes chip-shine-rev { from { transform: translateX(130%); } to { transform: translateX(-130%); } }
+@keyframes chip-pop {
+  0%   { transform: scale(0.92); }
+  55%  { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+@keyframes chip-out {
+  0%   { transform: scale(1); }
+  45%  { transform: scale(0.93); }
+  100% { transform: scale(1); }
+}
+
+// ==========================================================
+// Card re-entrance — staggered rise when a filter/toggle is applied.
+// Transform + blur only (no opacity) so the scroll-reveal observer stays
+// the single owner of card opacity.
+// ==========================================================
+@keyframes card-in {
+  0%   { transform: translateY(22px) scale(0.95); filter: blur(7px); }
+  100% { transform: none; filter: blur(0); }
+}
+.card-in {
+  animation: card-in 0.52s var(--ease-out-expo, cubic-bezier(.16, 1, .3, 1)) both;
+  animation-delay: var(--card-in-delay, 0ms);
+}
+@media (prefers-reduced-motion: reduce) {
+  .card-in { animation: none !important; }
+  .cat-chip.is-active, .cat-chip.is-outro,
+  .cat-chip.is-active::after, .cat-chip.is-outro::after { animation: none !important; }
+}

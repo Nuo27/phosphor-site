@@ -1,0 +1,16 @@
+{
+  "name": "notion-sync",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Sync published articles from Notion databases into _articles/*.md",
+  "engines": {
+    "node": ">=20.6"
+  },
+  "dependencies": {
+    "@notionhq/client": "^2.2.15",
+    "js-yaml": "^4.1.0",
+    "notion-to-md": "^3.1.0",
+    "p-limit": "^3.1.0"
+  }
+}

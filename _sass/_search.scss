@@ -1,0 +1,114 @@
+// ==========================================================
+// Terminal search — reusable inline filter bar
+// Markup contract in _includes/common/search.html; behavior in main.js
+// (initTerminalSearch). Styles are token-driven (runtime CSS vars only).
+// ==========================================================
+
+@use "variables" as *;
+@use "mixins" as *;
+
+.search-scope { margin-bottom: 1.5rem; }
+
+// Expandable bar that grows from the / badge.
+.search-bar {
+  display: flex;
+  align-items: center;
+  border: 1px solid transparent;
+  border-radius: var(--radius-xs);
+  transition: border-color 0.35s ease, background 0.35s ease, box-shadow 0.2s ease;
+}
+.search-bar.active {
+  border-color: color-mix(in srgb, var(--phosphor-soft) 22%, transparent);
+  background: color-mix(in srgb, var(--phosphor-soft) 4%, transparent);
+}
+.search-bar.active:focus-within {
+  border-color: color-mix(in srgb, var(--phosphor) 50%, transparent);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--phosphor) 10%, transparent);
+}
+
+.search-content {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  height: 42px;
+  padding: 0 0.9rem;
+  overflow: hidden;
+  white-space: nowrap;
+  flex: 1 1 0;
+  max-width: 0;
+  opacity: 0;
+  min-width: 0;
+  transition: max-width 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.25s ease;
+}
+.search-bar.active .search-content {
+  max-width: 100%;
+  opacity: 1;
+}
+
+.search-prompt {
+  font-size: 0.8rem;
+  color: var(--phosphor);
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.search-input {
+  flex: 1;
+  min-width: 0;
+  background: none;
+  border: none;
+  outline: none;
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  color: var(--ink);
+  letter-spacing: 0.02em;
+}
+.search-input::placeholder { color: var(--ink-faint); }
+
+.search-count {
+  font-size: 0.62rem;
+  color: var(--ink-faint);
+  letter-spacing: 0.06em;
+  flex-shrink: 0;
+}
+
+.search-toggle {
+  height: 42px;
+  padding: 0 0.8rem;
+  border: 1px solid color-mix(in srgb, var(--ink) 20%, transparent);
+  border-radius: var(--radius-xs);
+  background: transparent;
+  color: var(--ink-faint);
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: border-color 0.35s ease, color 0.25s ease, background 0.25s ease;
+}
+.search-toggle:hover {
+  border-color: color-mix(in srgb, var(--phosphor) 40%, transparent);
+  color: var(--phosphor);
+}
+.search-toggle { @include focus-ring(16px, 30%); }
+.search-bar.active .search-toggle {
+  border-color: transparent;
+  color: var(--ink-faint);
+}
+
+.search-empty {
+  padding: 2.5rem 0;
+  text-align: center;
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  color: var(--ink-faint);
+}
+
+.search-cursor-blink { animation: search-blink 1.1s steps(1) infinite; }
+@keyframes search-blink {
+  0%, 50%   { opacity: 1; }
+  51%, 100% { opacity: 0; }
+}

@@ -1,0 +1,11 @@
+{% assign s = page.skills %}
+{% if s %}
+<section class="reveal mb-5">
+  {% include common/section-head.html eyebrow=s.eyebrow title=s.title %}
+  <ul class="skills-list">
+    {% for skill in s.items %}
+      <li>{{ skill }}</li>
+    {% endfor %}
+  </ul>
+</section>
+{% endif %}

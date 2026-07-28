@@ -1,0 +1,18 @@
+{% assign s = page.education %}
+{% if s %}
+<section class="reveal mb-5">
+  {% include common/section-head.html eyebrow=s.eyebrow title=s.title %}
+  <div class="education-list">
+    {% for e in s.items %}
+      <div class="education-item reveal" style="transition-delay: {{ forloop.index0 | times: 120 }}ms;">
+        <span class="education-index mono no-select">// {{ forloop.index | prepend: '00' | slice: -2, 2 }}</span>
+        <div class="education-content">
+          <h3 class="education-qualification">{{ e.qualification }}</h3>
+          <p class="education-institution mono no-select">{{ e.institution }} · {{ e.from }} - {{ e.to }}</p>
+          {% if e.description %}<p class="education-description">{{ e.description }}</p>{% endif %}
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+</section>
+{% endif %}

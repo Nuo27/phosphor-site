@@ -1,0 +1,141 @@
+---
+layout: default
+---
+
+{%- comment -%} Order: status (year) desc, then name asc - matches the portfolio grid. {%- endcomment -%}
+{%- assign pn_groups = site.projects | group_by: "status" | sort: "name" | reverse -%}
+{%- assign all_local = "" | split: "" -%}
+{%- for g in pn_groups -%}
+  {%- assign g_items = g.items | sort: "name" -%}
+  {%- for p in g_items -%}
+    {%- assign all_local = all_local | push: p -%}
+  {%- endfor -%}
+{%- endfor -%}
+{%- assign cur_idx = nil -%}
+{%- for p in all_local -%}
+  {%- if p.url == page.url -%}
+    {%- assign cur_idx = forloop.index0 -%}
+  {%- endif -%}
+{%- endfor -%}
+{%- assign prev_proj = nil -%}
+{%- assign next_proj = nil -%}
+{%- assign last_idx = all_local.size | minus: 1 -%}
+{%- if cur_idx and cur_idx > 0 -%}
+  {%- assign prev_idx = cur_idx | minus: 1 -%}
+  {%- assign prev_proj = all_local[prev_idx] -%}
+{%- endif -%}
+{%- if cur_idx and cur_idx < last_idx -%}
+  {%- assign next_idx = cur_idx | plus: 1 -%}
+  {%- assign next_proj = all_local[next_idx] -%}
+{%- endif -%}
+
+<article class="project-detail">
+
+  {%- if page.image -%}
+  <header class="project-hero">
+    <div class="hero-backdrop" aria-hidden="true">
+      <div class="hero-image-wrap" data-reveal>
+        <img class="hero-image" src="{{ page.image | relative_url }}" alt="" loading="eager" decoding="async" />
+      </div>
+      <div class="hero-grain"></div>
+      <div class="hero-frame"></div>
+      <div class="hero-veil"></div>
+      <div class="hero-light"></div>
+    </div>
+    <div class="hero-content">
+      <p class="hero-meta no-select" data-reveal>{{ page.status | default: 'SELECTED WORK' | upcase }}</p>
+      <p class="hero-kicker">
+        <span class="kicker-mark" aria-hidden="true"></span>
+        <span class="kicker-text no-select">// PROJECT{%- if page.category %} · {{ page.category | upcase }}{%- endif -%}</span>
+      </p>
+      <h1 class="hero-title" data-reveal>{{ page.name }}</h1>
+      {%- if page.subtitle -%}
+      <p class="hero-lede" data-reveal>{{ page.subtitle }}</p>
+      {%- endif -%}
+      <div class="hero-rule" data-reveal aria-hidden="true"></div>
+    </div>
+  </header>
+  {%- else -%}
+  <header class="project-hero project-hero--no-image">
+    <div class="hero-backdrop" aria-hidden="true">
+      <div class="hero-veil"></div>
+      <div class="hero-light"></div>
+    </div>
+    <div class="hero-content">
+      <p class="hero-meta no-select" data-reveal>{{ page.status | default: 'SELECTED WORK' | upcase }}</p>
+      <p class="hero-kicker">
+        <span class="kicker-mark" aria-hidden="true"></span>
+        <span class="kicker-text no-select">// PROJECT{%- if page.category %} · {{ page.category | upcase }}{%- endif -%}</span>
+      </p>
+      <h1 class="hero-title" data-reveal>{{ page.name }}</h1>
+      {%- if page.subtitle -%}
+      <p class="hero-lede" data-reveal>{{ page.subtitle }}</p>
+      {%- endif -%}
+      <div class="hero-rule" data-reveal aria-hidden="true"></div>
+    </div>
+  </header>
+  {%- endif -%}
+
+  <section class="project-deck container">
+    <div class="deck-grid">
+      <div class="deck-body" data-reveal>
+        <p class="deck-lead">{{ page.description }}</p>
+      </div>
+      <div class="deck-meta" data-reveal>
+        {% if page.tags and page.tags.size > 0 %}
+        <div class="deck-tags">
+          <span class="deck-label mono no-select">TAGS</span>
+          <div class="deck-tags-row" data-reveal>
+            {% include common/tag-chips.html tags=page.tags link_base="/portfolio/?tag=" %}
+          </div>
+        </div>
+        {% endif %}
+        <div class="deck-actions">
+          {% if page.external_links and page.external_links.size > 0 %}
+            {% include common/external-links.html links=page.external_links item_class="btn btn-secondary-custom" magnetic=true %}
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="project-body-section container">
+    <div class="markdown-body project-body">
+      {{ content }}
+    </div>
+  </section>
+
+  <section class="project-nav container">
+    <a class="back-link" href="/portfolio/">
+      <i class="fas fa-arrow-left"></i> Back to Portfolio
+    </a>
+
+    {% if prev_proj %}
+    <a class="pn-card pn-prev reveal-left" href="{{ prev_proj.url | relative_url }}">
+      <img class="pn-cover" src="{{ prev_proj.image }}" alt="" loading="lazy" />
+      <span class="pn-veil" aria-hidden="true"></span>
+      <span class="pn-rail" aria-hidden="true"></span>
+      <i class="pn-arrow fas fa-arrow-left" aria-hidden="true"></i>
+      <span class="pn-text">
+        <span class="pn-kicker mono no-select">// PREVIOUS{%- if prev_proj.category %} · {{ prev_proj.category | upcase }}{%- endif %}</span>
+        <span class="pn-title">{{ prev_proj.name }}</span>
+        {%- if prev_proj.status %}<span class="pn-meta mono no-select">{{ prev_proj.status }}</span>{%- endif %}
+      </span>
+    </a>
+    {% endif %}
+
+    {% if next_proj %}
+    <a class="pn-card pn-next reveal-right" href="{{ next_proj.url | relative_url }}">
+      <img class="pn-cover" src="{{ next_proj.image }}" alt="" loading="lazy" />
+      <span class="pn-veil" aria-hidden="true"></span>
+      <span class="pn-rail" aria-hidden="true"></span>
+      <i class="pn-arrow fas fa-arrow-right" aria-hidden="true"></i>
+      <span class="pn-text">
+        <span class="pn-kicker mono no-select">// NEXT{%- if next_proj.category %} · {{ next_proj.category | upcase }}{%- endif %}</span>
+        <span class="pn-title">{{ next_proj.name }}</span>
+        {%- if next_proj.status %}<span class="pn-meta mono no-select">{{ next_proj.status }}</span>{%- endif %}
+      </span>
+    </a>
+    {% endif %}
+  </section>
+</article>

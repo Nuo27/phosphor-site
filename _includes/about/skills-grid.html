@@ -1,0 +1,15 @@
+{% if page.skills_detailed %}
+<section class="reveal mb-5">
+  <div class="row">
+    <div class="col-12 col-md-6 col-lg-4">
+      {% include about/skills.html title=page.skills_detailed.programming.title source=page.skills_detailed.programming.items %}
+    </div>
+    <div class="col-12 col-md-6 col-lg-4">
+      {% include about/skills.html title=page.skills_detailed.tools.title source=page.skills_detailed.tools.items %}
+    </div>
+    <div class="col-12 col-md-6 col-lg-4">
+      {% include about/skills.html title=page.skills_detailed.web.title source=page.skills_detailed.web.items %}
+    </div>
+  </div>
+</section>
+{% endif %}

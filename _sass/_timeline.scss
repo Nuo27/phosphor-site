@@ -1,0 +1,124 @@
+// ==========================================================
+// Timeline — alternating experience log with central line.
+// Token-driven colours; only the lift shadow stays theme-aware
+// (shadows are genuinely asymmetric — dark needs a stronger
+// cast than the paper substrate), matching .project.card /
+// .featured-item elsewhere.
+// ==========================================================
+
+@use "variables" as *;
+@use "mixins" as *;
+
+.timeline-body {
+  position: relative;
+  padding: 0.5rem 0;
+}
+
+// central vertical line — sustained rule uses the editorial soft green
+.timeline-body::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 0; bottom: 0;
+  width: 1px;
+  background: linear-gradient(to bottom, var(--phosphor-soft), color-mix(in srgb, var(--phosphor-soft) 12%, transparent));
+  transform: translateX(-50%);
+}
+
+.timeline-item {
+  position: relative;
+  width: 50%;
+  margin-bottom: 1.5rem;
+  padding: 0 2.25rem;
+  box-sizing: border-box;
+}
+.timeline-item.side-left  { left: 0;   text-align: right; }
+.timeline-item.side-right { left: 50%; text-align: left;  }
+
+// diamond marker anchored on the center line — vivid glowing point
+.timeline-marker {
+  position: absolute;
+  top: 1.1rem;
+  width: 12px; height: 12px;
+  background: var(--bg-void);
+  border: 2px solid var(--phosphor);
+  transform: rotate(45deg);
+  box-shadow: 0 0 8px color-mix(in srgb, var(--phosphor) 50%, transparent);
+  z-index: 2;
+}
+.side-left  .timeline-marker { right: -6px; }
+.side-right .timeline-marker { left: -6px; }
+
+// content card — shares the border-lightup language with .project.card /
+// .featured-item: border traces to a brighter phosphor on hover while a
+// softer bloom + inset top highlight ignite on the same $dur-lightup.
+.timeline-content {
+  display: inline-block;
+  text-align: left;
+  background: var(--bg-surface);
+  border: 1px solid color-mix(in srgb, var(--phosphor-soft) 22%, transparent);
+  padding: 0.9rem 1.05rem;
+  border-radius: $radius-xs;
+  max-width: 100%;
+  transition: transform    $dur-base    $ease-out-expo,
+              border-color $dur-lightup $ease-out-expo,
+              box-shadow   $dur-lightup $ease-out-expo;
+  &:hover {
+    border-color: color-mix(in srgb, var(--phosphor) 60%, transparent);
+    transform: translateY(-2px);
+    @include border-lightup(0 8px 22px rgba(0, 0, 0, 0.4), 16px, 22%, 35%);
+    [data-theme="light"] & { @include border-lightup(0 8px 18px rgba(10, 11, 15, 0.10), 14px, 20%, 32%); }
+  }
+}
+
+.timeline-index {
+  display: block;
+  font-size: 0.58rem;
+  color: var(--cyan);
+  letter-spacing: 0.18em;
+  margin-bottom: 0.25rem;
+}
+
+.timeline-title {
+  font-family: $font-display;
+  font-size: 1.05rem;
+  font-weight: 700;
+  margin-bottom: 0.2rem;
+  text-transform: uppercase;
+  letter-spacing: -0.01em;
+}
+
+.timeline-date {
+  font-family: $font-mono;
+  font-size: 0.62rem;
+  color: var(--phosphor);
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  margin-bottom: 0.5rem;
+}
+
+.timeline-description {
+  font-size: 0.88rem;
+  line-height: 1.6;
+  color: var(--ink-mut);
+  margin: 0;
+}
+
+// Mobile — collapse to a single column with the line on the left
+@media (max-width: 768px) {
+  .timeline-body::before { left: 8px; transform: none; }
+  .timeline-item,
+  .timeline-item.side-left,
+  .timeline-item.side-right {
+    width: 100%;
+    left: 0;
+    padding: 0 0 0 2rem;
+    text-align: left;
+    margin-bottom: 1.25rem;
+  }
+  .side-left  .timeline-marker,
+  .side-right .timeline-marker {
+    left: 2px;
+    right: auto;
+  }
+}

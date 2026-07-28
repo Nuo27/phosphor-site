@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+
+<!--
+  {{ site.title }} - personal portfolio
+  Built on Jekyll. Tactical telemetry UI.
+-->
+
+<html lang="en" data-theme="dark">
+
+{% include head.html %}
+
+<body class="h-100 d-flex flex-column">
+
+  <a href="#app" class="skip-link">Skip to content</a>
+
+  <!-- Content wrapper - navbar + main + footer. Scrolling is native;
+       this is a plain container, no longer a transform target. Fixed
+       overlays (CRT, HUD, lightbox, hero-aurora, #backToTop) live as
+       siblings on body / documentElement. -->
+  <div id="smooth-scroll">
+    <div class="container mt-4 flex-shrink-0">
+      {% include navbar.html %}
+    </div>
+    <main id="app" class="flex-shrink-0 container" tabindex="-1">
+      {{ content }}
+    </main>
+    {% include footer.html %}
+  </div>
+
+  <!-- Soft router (intercepts in-app navigation, keeps the document shell alive) -->
+  <script src="{{ "/assets/js/router.js" | relative_url }}"></script>
+
+  <!-- Main JS (vanilla) -->
+  <script src="{{ "/assets/js/main.js" | relative_url }}"></script>
+</body>
+
+</html>

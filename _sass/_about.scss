@@ -1,0 +1,269 @@
+// ==========================================================
+// About page — section layout, skills, languages, education, contact
+// Fully token-driven (auto-themes via the --ink/--phosphor vars in
+// _tokens.scss); no per-element [data-theme] overrides remain.
+// ==========================================================
+
+@use "variables" as *;
+@use "mixins" as *;
+
+.about-wrapper {
+  padding: 2rem 0 4rem;
+  max-width: 820px;
+  margin: 0 auto;
+}
+
+// ---- Section headings (shared with articles page via section-head include) ----
+
+.section-head {
+  margin-bottom: 1.5rem;
+  padding-bottom: 0.6rem;
+  border-bottom: 1px solid color-mix(in srgb, var(--phosphor-soft) 26%, transparent);
+}
+
+.section-eyebrow {
+  display: block;
+  font-size: 0.65rem;
+  color: var(--cyan);
+  letter-spacing: 0.2em;
+  margin-bottom: 0.4rem;
+}
+
+.section-title {
+  font-family: $font-display;
+  font-size: clamp(1.6rem, 4vw, 2.2rem);
+  font-weight: 700;
+  margin: 0;
+  color: var(--ink);
+  letter-spacing: -0.028em;
+  text-transform: uppercase;
+  line-height: 1;
+  text-wrap: balance;
+}
+// .title-prompt lives in _base.scss — the site's one blink rule.
+
+// ---- Intro ----
+
+.about-intro p {
+  line-height: 1.75;
+  margin-bottom: 1rem;
+}
+.about-intro strong { color: var(--phosphor-soft); }
+
+// ---- Core competencies list (chip system, "//" prefix variant) ----
+
+.skills-list {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+.skills-list li {
+  @include chip(0.4rem 0.8rem, 0.72rem);
+  @include chip-hover;
+  &::before { content: "// "; color: var(--phosphor); opacity: 0.75; }
+}
+
+// ---- Skill tags (programming / tools columns) ----
+
+.skills-section { margin-bottom: 1.5rem; }
+.skills-title {
+  font-family: $font-mono;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  margin-bottom: 0.85rem;
+  color: var(--cyan);
+}
+.skills-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+.skill-tag {
+  @include chip(0.4rem 0.75rem, 0.7rem);
+  @include chip-hover;
+  cursor: default;
+}
+
+// ---- Languages ----
+
+.languages-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+.language-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.3rem 0.6rem;
+  border-radius: $radius-xs;
+  background: color-mix(in srgb, var(--ink) 4%, transparent);
+  border: 1px solid color-mix(in srgb, var(--ink) 14%, transparent);
+  transition: background $dur-fast $ease-out-expo, border-color $dur-fast $ease-out-expo, transform $dur-fast $ease-out-expo;
+  &:hover {
+    transform: translateY(-1px);
+    background: color-mix(in srgb, var(--phosphor) 10%, transparent);
+    border-color: color-mix(in srgb, var(--phosphor) 35%, transparent);
+  }
+}
+.language-name {
+  font-family: $font-mono;
+  font-weight: 700;
+  font-size: 0.68rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  margin: 0;
+  color: var(--ink);
+  &::after {
+    content: "//";
+    color: var(--phosphor);
+    opacity: 0.55;
+    margin-left: 0.35rem;
+    font-weight: 400;
+  }
+}
+.language-level {
+  font-family: $font-mono;
+  font-size: 0.6rem;
+  color: var(--cyan);
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.languages-note {
+  margin-top: 1rem;
+  font-size: 0.65rem;
+  color: var(--ink-faint);
+  letter-spacing: 0.1em;
+}
+
+// ---- Education ----
+
+.education-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+.education-item {
+  display: flex;
+  gap: 1rem;
+  padding: 1rem 1.1rem;
+  border: 1px solid color-mix(in srgb, var(--ink) 12%, transparent);
+  border-left: 2px solid var(--phosphor-soft);
+  border-radius: $radius-xs;
+  background: color-mix(in srgb, var(--ink) 3%, transparent);
+}
+.education-index {
+  font-size: 0.65rem;
+  color: var(--phosphor-soft);
+  letter-spacing: 0.16em;
+  flex-shrink: 0;
+}
+.education-content { min-width: 0; }
+.education-qualification {
+  font-family: $font-serif;
+  font-size: 1.15rem;
+  font-weight: 500;
+  margin: 0 0 0.2rem;
+  color: var(--ink);
+}
+.education-institution {
+  font-size: 0.66rem;
+  letter-spacing: 0.1em;
+  color: var(--ink-faint);
+  margin: 0 0 0.5rem;
+}
+.education-description {
+  font-size: 0.9rem;
+  line-height: 1.6;
+  margin: 0;
+  color: var(--ink-mut);
+}
+
+// ---- Contact ----
+
+.contact-block {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1.1rem;
+}
+.contact-blurb {
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: var(--ink-mut);
+  margin: 0;
+  max-width: 52ch;
+}
+.contact-social { margin-top: 0.25rem; }
+
+// Guided-scroll target: a little breathing room from the viewport top.
+#contact { scroll-margin-top: 2rem; }
+
+// ---- Currently / Now grid ----
+
+.now-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.75rem;
+  @media (max-width: 576px) { grid-template-columns: 1fr; }
+}
+.now-item {
+  display: flex;
+  align-items: baseline;
+  gap: 0.75rem;
+  padding: 0.6rem 0.9rem;
+  border: 1px solid color-mix(in srgb, var(--ink) 12%, transparent);
+  border-radius: $radius-xs;
+  background: color-mix(in srgb, var(--ink) 3%, transparent);
+}
+.now-label {
+  font-size: 0.62rem;
+  color: var(--cyan);
+  letter-spacing: 0.14em;
+  flex-shrink: 0;
+  min-width: 4.5rem;
+}
+.now-value {
+  font-family: $font-body;
+  font-size: 0.85rem;
+  color: var(--ink-mut);
+}
+
+// ---- Recommendations ----
+
+.testimonials { display: flex; flex-direction: column; gap: 1.25rem; }
+.testimonial {
+  margin: 0;
+  padding: 1.25rem 1.5rem;
+  border-left: 2px solid var(--phosphor-soft);
+  background: color-mix(in srgb, var(--ink) 3%, transparent);
+  border-radius: 0 $radius-xs $radius-xs 0;
+}
+.testimonial p {
+  font-size: 0.92rem;
+  line-height: 1.65;
+  color: var(--ink-mut);
+  margin: 0 0 0.5rem;
+}
+.testimonial cite {
+  font-family: $font-mono;
+  font-size: 0.68rem;
+  font-style: normal;
+  letter-spacing: 0.08em;
+  color: var(--phosphor-soft);
+}
+
+// ---- Placeholder (TODO content) ----
+
+.placeholder {
+  font-style: italic;
+  color: var(--ink-faint);
+  border-bottom: 1px dashed color-mix(in srgb, var(--ink) 28%, transparent);
+  padding-bottom: 1px;
+}

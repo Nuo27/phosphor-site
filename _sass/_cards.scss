@@ -1,0 +1,32 @@
+// ==========================================================
+// Content cards + shared link system — the site's ONE underline.
+// The editorial swipe lives in _mixins.scss (@mixin editorial-underline)
+// and is reused by .card-title-link (card titles) and .markdown-body a
+// (article/project body links), so the implementation cannot drift back
+// into page-specific code.
+// ==========================================================
+
+@use "variables" as *;
+@use "mixins" as *;
+
+// Neutralize Bootstrap 4 reboot's `a:hover { text-decoration: underline }`
+// at the source. This stylesheet loads AFTER the Bootstrap CDN <link>, so
+// this rule (equal specificity, later in source order) wins — the instant
+// text-decoration underline can never duplicate the animated swipe on any
+// link (card titles, CTAs, nav, tag chips, body links, …).
+a:hover { text-decoration: none; }
+
+// Card title link — recolour + swipe fire on DIRECT hover only, never on
+// whole-card hover, so text interaction stays independent from card
+// interaction (lift / border / shadow / image). Portfolio cards have no
+// title link (plain text), so they are naturally decoupled.
+.card-title-link {
+  @include editorial-underline;
+  color: inherit;
+  &.is-hover, &:hover { color: var(--card-accent, #{$phosphor}); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .card-title-link,
+  .card-title-link::after { transition-duration: 0.01ms !important; }
+}

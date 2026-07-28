@@ -1,0 +1,55 @@
+{% assign stream = page.stream %}
+{% assign labels = stream.labels %}
+{% assign rw = page.random_work %}
+<style>
+  /* Hide random-work candidates until JS reveals the picked subset */
+  .stream .rw-item[hidden] { display: none !important; }
+</style>
+  <!-- ============ Random content stream ============ -->
+  <section class="mag-section mag-stream" aria-labelledby="stream-heading">
+    <header class="mag-section-head" data-reveal>
+      <span class="mag-kicker mono no-select">// {{ stream.kicker }}</span>
+      <h2 class="mag-heading" id="stream-heading">{{ stream.heading }}</h2>
+    </header>
+
+    <div class="stream" data-random-work data-count="{{ rw.count | default: 3 }}">
+
+      {% comment %} Exclude items matching random_work.hide (tags/categories).
+            Falls back to the site-wide portfolio.hidden_* so anything suppressed
+            on the portfolio stays out of the home stream too. {% endcomment %}
+      {% assign hide_tags = rw.hide.tags | default: site.portfolio.hidden_tags %}
+      {% assign hide_cats = rw.hide.categories | default: site.portfolio.hidden_categories %}
+
+      {% comment %} Render every item from the configured types as a hidden
+            candidate (.rw-item). JS (initRandomWork) reveals `count` of them
+            at random per page load and re-fixes their index + side.
+            Add a type: add a {% when %} branch + _includes/stream/<type>-card.html. {% endcomment %}
+      {% for t in rw.types %}
+        {% case t %}
+          {% when 'project' %}
+            {% for p in site.projects %}
+              {%- assign skip = false -%}
+              {%- for ht in hide_tags -%}{%- if p.tags contains ht -%}{%- assign skip = true -%}{%- break -%}{%- endif -%}{%- endfor -%}
+              {%- if hide_cats contains p.category -%}{%- assign skip = true -%}{%- endif -%}
+              {%- unless skip -%}
+                {% include stream/project-card.html project=p index=forloop.index side="fi-side-left" labels=labels pool=true %}
+              {%- endunless -%}
+            {% endfor %}
+          {% when 'article' %}
+            {% for a in site.articles %}
+              {%- assign skip = false -%}
+              {%- for ht in hide_tags -%}{%- if a.tags contains ht -%}{%- assign skip = true -%}{%- break -%}{%- endif -%}{%- endfor -%}
+              {%- unless skip -%}
+                {% include stream/article-card.html article=a index=forloop.index labels=labels pool=true %}
+              {%- endunless -%}
+            {% endfor %}
+        {% endcase %}
+      {% endfor %}
+
+    </div>
+
+    <footer class="mag-section-foot stream-foot" data-reveal>
+      <a class="mag-all mono" href="/portfolio/">{{ labels.all_projects }} <i class="fas fa-arrow-right"></i></a>
+      <a class="mag-all mono" href="/articles/">{{ labels.all_articles }} <i class="fas fa-arrow-right"></i></a>
+    </footer>
+  </section>

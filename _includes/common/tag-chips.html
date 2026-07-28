@@ -1,0 +1,22 @@
+{%- comment -%}
+  Render a list of tags as styled .tag-chip elements.
+  Params:
+    tags      -> array of strings (required)
+    accent    -> array (or string) of tags that get the .tag-chip--accent modifier
+    link_base -> if set, chips render as <a> links to "{link_base}{url-encoded tag}",
+                 e.g. "/portfolio/?tag=". Used on cards so a tag click filters the list page.
+{%- endcomment -%}
+{%- assign accent_list = include.accent | default: site.portfolio.accent_tag -%}
+{%- for tag in include.tags -%}
+  {%- assign slug = tag | downcase | replace: ' ', '-' -%}
+  {%- assign is_accent = false -%}
+  {%- if accent_list contains tag or accent_list contains slug -%}
+    {%- assign is_accent = true -%}
+  {%- endif -%}
+  {%- if include.link_base -%}
+  <a class="tag-chip tag-chip--link{% if is_accent %} tag-chip--accent{% endif %}"
+     href="{{ include.link_base }}{{ tag | url_encode }}">{{ tag }}</a>
+  {%- else -%}
+  <span class="tag-chip{% if is_accent %} tag-chip--accent{% endif %}">{{ tag }}</span>
+  {%- endif -%}
+{%- endfor -%}

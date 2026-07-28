@@ -1,0 +1,39 @@
+{%- comment -%}
+  Image gallery/carousel include.
+  Usage:
+    {% capture carousel_images %}/a.png\n/b.png{% endcapture %}
+    {% include elements/carousel.html %}
+  Markup only - styles live in _sass/_gallery.scss, behaviour in main.js (initGalleries).
+  Each slide is lightbox-enabled (data-lightbox) grouped by the page slug.
+{%- endcomment -%}
+{%- assign images = carousel_images | strip | newline_to_br | split: '<br />' -%}
+{%- assign gid = page.url | slugify -%}
+
+<figure class="gallery" data-gallery>
+  <div class="gallery-stage">
+    <div class="gallery-track">
+      {%- for image in images -%}
+        <div class="gallery-slide" data-index="{{ forloop.index0 }}"
+             data-lightbox data-lightbox-group="{{ gid }}" data-lightbox-src="{{ image | strip }}">
+          <img src="{{ image | strip }}" alt="Gallery image {{ forloop.index }}" loading="lazy" />
+        </div>
+      {%- endfor -%}
+    </div>
+
+    {%- if images.size > 1 -%}
+    <button class="gallery-nav gallery-prev" type="button" aria-label="Previous image"><i class="fas fa-chevron-left"></i></button>
+    <button class="gallery-nav gallery-next" type="button" aria-label="Next image"><i class="fas fa-chevron-right"></i></button>
+    <span class="gallery-counter mono"><span class="gallery-current">01</span> <span class="gallery-sep">/</span> {{ images.size }}</span>
+    {%- endif -%}
+  </div>
+
+  {%- if images.size > 1 -%}
+  <div class="gallery-thumbs">
+    {%- for image in images -%}
+      <button class="gallery-thumb{% if forloop.first %} active{% endif %}" type="button" data-index="{{ forloop.index0 }}" aria-label="Go to image {{ forloop.index }}">
+        <img src="{{ image | strip }}" alt="" loading="lazy" />
+      </button>
+    {%- endfor -%}
+  </div>
+  {%- endif -%}
+</figure>
