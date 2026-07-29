@@ -112,13 +112,13 @@
   {% comment %} Filter bar - carries the divider (border-bottom). Togglers sit on
         this row, right-aligned, above the divider. Renders when there are
         multiple categories OR any reveal togglers. {% endcomment %}
-  {% if project_cats.size > 1 or has_togglers %}
+  {% if project_cats.size > 0 or has_togglers %}
   <nav class="cat-filter reveal" data-category-filter
        data-filter-list="#projects-grid"
        data-filter-item=".card-wrap"
        aria-label="Filter projects by category">
     <span class="cat-filter__label mono no-select">// {{ filter_label | upcase }}</span>
-    {% if project_cats.size > 1 %}
+    {% if project_cats.size > 0 %}
     <div class="cat-filter__chips">
       <button class="cat-chip is-active mono" type="button" data-cat="all">ALL</button>
       {% for c in project_cats %}
