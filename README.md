@@ -18,6 +18,7 @@
 - **Token-driven design system** — two layers (`_sass/_variables.scss` compile-time + `_sass/_tokens.scss` runtime CSS custom properties), auto light/dark theme via `[data-theme]`.
 - **Front-matter-driven pages** — content lives in YAML front matter, not HTML. Layouts compose sections via `{% if page.X %}` guards: omit a key and the section doesn't render.
 - **Portfolio + blog collections** — `_projects/` and `_articles/` with tag/category filtering, search, and visibility toggles (`hidden_*` / `dimmed_*`).
+- **SEO & feeds built in** — `sitemap.xml`, Atom feed at `/feed.xml` (top-level articles only), Open Graph + Twitter cards, canonical URLs, and `robots.txt`. All driven by `url:` in `_config.yml`.
 - **Animation systems** — WAAPI border-trace on cards, scroll-reveal (IntersectionObserver), typewriter, glitch burst, parallax, magnetic buttons, gallery/lightbox, and a random-work stream on the home page.
 - **Optional Notion CMS** — sync Notion databases → Markdown at build time. Opt-in; see [`integrations/notion-sync/`](integrations/notion-sync/README.md).
 
@@ -25,7 +26,7 @@
 
 1. **Fork** this repo.
 2. **Rename it** to `<your-username>.github.io` (user site) or keep `phosphor-site` (project site — then set `baseurl: "/phosphor-site"` in `_config.yml`).
-3. **Edit `_config.yml`** — `title`, `description`, `repository`, `author`, and `social` block.
+3. **Edit `_config.yml`** — `title`, `description`, `url`, `repository`, `author`, and `social` block. Set `url` to your deployed origin (e.g. `https://USERNAME.github.io`) — the RSS feed, sitemap, and social-preview cards all depend on it.
 4. **Add your photo** at `assets/image/bio-photo.png` (800×800 recommended).
 5. **Enable Pages** — repo Settings → Pages → Source: **GitHub Actions**.
 6. **Push to `dev`** — the workflow builds and deploys.

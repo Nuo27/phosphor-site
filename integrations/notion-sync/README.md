@@ -87,7 +87,7 @@ source: notion
 ---
 ```
 
-Sub-pages carry `nested: true` and are excluded from the `/articles/` listing.
+Sub-pages carry `nested: true` and are excluded from the `/articles/` listing, the home stream, and the RSS feed.
 The body is wrapped in `{% raw %}…{% endraw %}` so any Liquid syntax
 (`{{ }}`, `{% %}`) in Notion content is not evaluated by Jekyll.
 

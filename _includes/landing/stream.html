@@ -37,6 +37,7 @@
             {% endfor %}
           {% when 'article' %}
             {% for a in site.articles %}
+              {%- if a.nested %}{% continue %}{% endif -%}
               {%- assign skip = false -%}
               {%- for ht in hide_tags -%}{%- if a.tags contains ht -%}{%- assign skip = true -%}{%- break -%}{%- endif -%}{%- endfor -%}
               {%- unless skip -%}
@@ -49,7 +50,7 @@
     </div>
 
     <footer class="mag-section-foot stream-foot" data-reveal>
-      <a class="mag-all mono" href="/portfolio/">{{ labels.all_projects }} <i class="fas fa-arrow-right"></i></a>
-      <a class="mag-all mono" href="/articles/">{{ labels.all_articles }} <i class="fas fa-arrow-right"></i></a>
+      <a class="mag-all mono" href="{{ '/portfolio/' | relative_url }}">{{ labels.all_projects }} <i class="fas fa-arrow-right"></i></a>
+      <a class="mag-all mono" href="{{ '/articles/' | relative_url }}">{{ labels.all_articles }} <i class="fas fa-arrow-right"></i></a>
     </footer>
   </section>

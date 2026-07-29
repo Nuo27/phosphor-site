@@ -1,11 +1,11 @@
 ### Site Settings ###
-title               : Your Name
-description         : >-
-                      Your site description. Keep it to 1-2 sentences — appears in
-                      the hero, footer, and SEO meta tags.
-baseurl             : ""
-repository          : your-username/phosphor-site
-
+title: Your Name
+description: >-
+  Your site description. Keep it to 1-2 sentences — appears in
+  the hero, footer, and SEO meta tags.
+baseurl: ""
+repository: your-username/phosphor-site
+url: "https://your-username.github.io/phosphor-site" # deployed URL; required for feed, sitemap, and OG previews
 
 ### Navigation ###
 # Top navbar links, in display order. `label` is the visible text; `url` is the
@@ -14,32 +14,29 @@ repository          : your-username/phosphor-site
 # also lights up on `/portfolio/<project>/`). Omit `label` to fall back to the
 # target page's `title`.
 nav:
-  - { label: About,     url: /about/ }
+  - { label: About, url: /about/ }
   - { label: Portfolio, url: /portfolio/ }
-  - { label: Articles,  url: /articles/ }
-
+  - { label: Articles, url: /articles/ }
 
 ### Author Info ###
 author:
-  name              : Your Name
-  image             : assets/image/bio-photo.png   # replace with your photo (800×800px)
-  location          : Your City, Country
-
+  name: Your Name
+  image: assets/image/bio-photo.png # replace with your photo (800×800px)
+  location: Your City, Country
 
 ### Social Links (rendered by _includes/social.html) ###
 social:
-  - name            : Email
-    icon            : envelope
-    url             : "mailto:you@example.com"
-  - name            : GitHub
-    icon            : github
-    prefix          : fab
-    url             : "https://github.com/your-username"
-  - name            : LinkedIn
-    icon            : linkedin-in
-    prefix          : fab
-    url             : "https://www.linkedin.com/in/your-username"
-
+  - name: Email
+    icon: envelope
+    url: "mailto:you@example.com"
+  - name: GitHub
+    icon: github
+    prefix: fab
+    url: "https://github.com/your-username"
+  - name: LinkedIn
+    icon: linkedin-in
+    prefix: fab
+    url: "https://www.linkedin.com/in/your-username"
 
 ### Collections ###
 collections:
@@ -49,7 +46,6 @@ collections:
   articles:
     output: true
     permalink: /articles/:name
-
 
 ### Defaults for collections ###
 defaults:
@@ -64,6 +60,10 @@ defaults:
     values:
       layout: "article"
 
+### Plugins ###
+# jekyll-sitemap → /sitemap.xml for search engines
+plugins:
+  - jekyll-sitemap
 
 ### Portfolio visibility (site-wide defaults) ###
 # accent_tag:  tag name highlighted in accent color on cards/chips (e.g. "Open Source").
@@ -77,16 +77,15 @@ portfolio:
   hidden_categories: []
   dimmed_tags: []
   dimmed_categories: []
-  hidden_label: "hidden"        # short noun; shown uppercased in the toggle button
-  filter_label: "FILTER"        # the // label over the category chips
-  show_label: "SHOW"            # the // label over the reveal-toggle chips
-
+  hidden_label: "hidden" # short noun; shown uppercased in the toggle button
+  filter_label: "FILTER" # the // label over the category chips
+  show_label: "SHOW" # the // label over the reveal-toggle chips
 
 ### Exclude from processing ###
 exclude:
   - README.md
   - CONTRIBUTING.md
   - LICENSE
-  - plan.md
+  - AUDIT.md
   - "*.log"
   - integrations/

@@ -11,7 +11,7 @@ layout: default
           <i class="fas fa-arrow-left"></i> Back to {{ page.parent_title }}
         </a>
         {% else %}
-        <a href="/articles/" class="back-link">
+        <a href="{{ '/articles/' | relative_url }}" class="back-link">
           <i class="fas fa-arrow-left"></i> Back to Articles
         </a>
         {% endif %}
@@ -52,7 +52,7 @@ layout: default
 
   <section class="article-footer-section">
     <div class="container">
-      <a href="/articles/" class="back-link">
+      <a href="{{ '/articles/' | relative_url }}" class="back-link">
         <i class="fas fa-arrow-left"></i> Back to Articles
       </a>
     </div>

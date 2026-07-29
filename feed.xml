@@ -1,0 +1,29 @@
+---
+layout: null
+---
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom"{% if site.lang %} xml:lang="{{ site.lang }}"{% endif %}>
+  <generator uri="https://jekyllrb.com/" version="{{ jekyll.version }}">Jekyll</generator>
+  <link href="{{ '/feed.xml' | absolute_url }}" rel="self" type="application/atom+xml" />
+  <link href="{{ '/' | absolute_url }}" rel="alternate" type="text/html" />
+  <updated>{{ site.time | date_to_xmlschema }}</updated>
+  <id>{{ '/feed.xml' | absolute_url | xml_escape }}</id>
+  <title type="html">{{ site.title | smartify | xml_escape }}</title>
+  {% if site.description %}<subtitle>{{ site.description | xml_escape }}</subtitle>{% endif %}
+  {% if site.author %}<author><name>{{ site.author.name | default: site.author | xml_escape }}</name></author>{% endif %}
+
+  {% assign articles = site.articles | where_exp: "a", "a.nested != true" %}
+  {% for a in articles %}
+  <entry>
+    <title type="html">{{ a.title | smartify | strip_html | normalize_whitespace | xml_escape }}</title>
+    <link href="{{ a.url | absolute_url }}" rel="alternate" type="text/html" />
+    <published>{{ a.date | default: site.time | date_to_xmlschema }}</published>
+    <updated>{{ a.last_modified_at | default: a.date | default: site.time | date_to_xmlschema }}</updated>
+    <id>{{ a.url | absolute_url | xml_escape }}</id>
+    <content type="html" xml:base="{{ a.url | absolute_url | xml_escape }}"><![CDATA[{{ a.content | strip }}]]></content>
+    {% if a.category %}<category term="{{ a.category | xml_escape }}" />{% endif %}
+    {% for tag in a.tags %}<category term="{{ tag | xml_escape }}" />{% endfor %}
+    {% if a.description %}<summary type="html"><![CDATA[{{ a.description | strip_html | normalize_whitespace }}]]></summary>{% endif %}
+  </entry>
+  {% endfor %}
+</feed>
