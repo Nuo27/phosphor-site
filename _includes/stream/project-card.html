@@ -6,7 +6,7 @@
          data-item-type="project"{% if include.pool %} hidden{% endif %}>
   {%- if p.image -%}
   <a class="fi-media" href="{{ p.url | relative_url }}" aria-label="{{ p.name }}">
-    <img src="{{ p.image }}" alt="{{ p.name }}" loading="lazy" />
+    <img src="{{ p.image | relative_url }}" alt="{{ p.name }}" loading="lazy" />
     <span class="fi-overlay" aria-hidden="true"></span>
     <span class="fi-view mono no-select" aria-hidden="true">VIEW <i class="fas fa-arrow-right"></i></span>
   </a>
