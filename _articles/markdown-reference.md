@@ -119,7 +119,7 @@ Text below.
 
 ## Image
 
-![Bio photo](/assets/image/bio-photo.png)
+![Phosphor](/assets/image/logo/phosphor-avatar.svg)
 
 ## Definition List
 

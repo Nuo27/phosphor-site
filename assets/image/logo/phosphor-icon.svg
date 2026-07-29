@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" role="img" aria-label="Phosphor">
+  <defs>
+    <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="2.4" result="b"/>
+      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <linearGradient id="tile" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#11141C"/>
+      <stop offset="1" stop-color="#0B0D14"/>
+    </linearGradient>
+  </defs>
+  <rect x="1.5" y="1.5" width="61" height="61" rx="14" fill="url(#tile)" stroke="#00FF9C" stroke-opacity="0.35"/>
+  <g stroke="#00FF9C" stroke-opacity="0.06">
+    <line x1="6" y1="22" x2="58" y2="22"/>
+    <line x1="6" y1="32" x2="58" y2="32"/>
+    <line x1="6" y1="42" x2="58" y2="42"/>
+  </g>
+  <g stroke="#00FF9C" stroke-opacity="0.55" stroke-width="1.6" stroke-linecap="round" fill="none">
+    <path d="M10 18 V11 H17"/>
+    <path d="M47 11 H54 V18"/>
+    <path d="M54 46 V53 H47"/>
+    <path d="M17 53 H10 V46"/>
+  </g>
+  <path d="M22 26 L42 26 L32 44 Z" fill="#00FF9C" filter="url(#glow)"/>
+  <path d="M22 26 L42 26 L32 44 Z" fill="#4DFFB1"/>
+</svg>

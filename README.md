@@ -1,4 +1,4 @@
-# phosphor-site
+<p align="center"><img src="assets/image/logo/phosphor-wordmark.svg" width="360" alt="Phosphor"></p>
 
 > Magazine-grade Jekyll personal site template with a **tactical telemetry** aesthetic — phosphor-green-on-void-dark HUD UI, CRT grain, scan lines, and an editorial layout.
 
@@ -6,7 +6,6 @@
 [![Jekyll](https://img.shields.io/badge/Jekyll-4.3-1a3d33.svg?style=flat-square&labelColor=0a0e0d&color=1a3d33)](https://jekyllrb.com)
 
 <!-- TODO: drop a screenshot or GIF of the home page here -->
-![phosphor-site screenshot](assets/image/projects/_placeholder.svg)
 
 ---
 
@@ -27,7 +26,7 @@
 1. **Fork** this repo.
 2. **Rename it** to `<your-username>.github.io` (user site) or keep `phosphor-site` (project site — then set `baseurl: "/phosphor-site"` in `_config.yml`).
 3. **Edit `_config.yml`** — `title`, `description`, `url`, `repository`, `author`, and `social` block. Set `url` to your deployed origin (e.g. `https://USERNAME.github.io`) — the RSS feed, sitemap, and social-preview cards all depend on it.
-4. **Add your photo** at `assets/image/bio-photo.png` (800×800 recommended).
+4. **Set your portrait** — point `author.image` in `_config.yml` at your photo (800×800 recommended).
 5. **Enable Pages** — repo Settings → Pages → Source: **GitHub Actions**.
 6. **Push to `dev`** — the workflow builds and deploys.
 

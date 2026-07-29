@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 800" width="800" height="800" role="img" aria-label="Phosphor">
+  <defs>
+    <radialGradient id="vg" cx="50%" cy="42%" r="75%">
+      <stop offset="0" stop-color="#11141C"/>
+      <stop offset="70%" stop-color="#0B0D14"/>
+      <stop offset="100%" stop-color="#06070B"/>
+    </radialGradient>
+    <filter id="glow" x="-60%" y="-60%" width="220%" height="220%">
+      <feGaussianBlur stdDeviation="22" result="b"/>
+      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <pattern id="scan" width="800" height="6" patternUnits="userSpaceOnUse">
+      <line x1="0" y1="0" x2="800" y2="0" stroke="#00FF9C" stroke-opacity="0.05" stroke-width="2"/>
+    </pattern>
+  </defs>
+  <rect width="800" height="800" fill="url(#vg)"/>
+  <rect width="800" height="800" fill="url(#scan)"/>
+  <g stroke="#00FF9C" stroke-opacity="0.5" stroke-width="3" fill="none" stroke-linecap="round">
+    <path d="M60 150 V80 H130"/>
+    <path d="M670 80 H740 V150"/>
+    <path d="M740 650 V720 H670"/>
+    <path d="M130 720 H60 V650"/>
+  </g>
+  <g filter="url(#glow)">
+    <path d="M280 300 L520 300 L400 520 Z" fill="#00FF9C"/>
+  </g>
+  <path d="M280 300 L520 300 L400 520 Z" fill="#4DFFB1"/>
+  <text x="400" y="632" text-anchor="middle" font-family="'JetBrains Mono','IBM Plex Mono',ui-monospace,monospace" font-size="30" letter-spacing="8" fill="#00FF9C" fill-opacity="0.85">PHOSPHOR</text>
+  <text x="400" y="672" text-anchor="middle" font-family="'JetBrains Mono',ui-monospace,monospace" font-size="18" letter-spacing="4" fill="#ECEEF5" fill-opacity="0.45">// NODE_01 ONLINE</text>
+</svg>

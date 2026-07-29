@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 120" width="480" height="120" role="img" aria-label="Phosphor">
+  <defs>
+    <filter id="g" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="2" result="b"/>
+      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+  <rect width="480" height="120" rx="24" fill="#0B0D14"/>
+  <g transform="translate(30,30)">
+    <rect width="60" height="60" rx="14" fill="#11141C" stroke="#00FF9C" stroke-opacity="0.35"/>
+    <path d="M18 24 L42 24 L30 42 Z" fill="#00FF9C" filter="url(#g)"/>
+  </g>
+  <text x="120" y="76" font-family="'Space Grotesk','Inter',system-ui,sans-serif" font-size="52" font-weight="700" letter-spacing="-1" fill="#00FF9C">phosphor</text>
+</svg>

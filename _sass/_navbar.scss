@@ -36,6 +36,14 @@
   align-items: center;
 }
 
+.navbar-brand .brand-icon {
+  height: 1.15em;
+  width: auto;
+  margin-right: 0.5rem;
+  border-radius: 4px;
+  flex-shrink: 0;
+}
+
 // Title brackets on the <b> — same fade+slide reveal as the .nav-link brackets,
 // triggered on hover and when active (homepage = current route).
 .navbar-brand b {

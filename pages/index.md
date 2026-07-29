@@ -3,10 +3,10 @@ layout: home
 permalink: /
 
 hero:
-  eyebrow: "YOUR ROLE · YOUR LOCATION"
-  skills: [Skill One, Skill Two, Skill Three]
+  eyebrow: "JEKYLL TEMPLATE · TACTICAL TELEMETRY"
+  skills: [Jekyll, SCSS, Vanilla JS]
   cta_primary:   { label: "View Work",    url: "/portfolio/" }
-  cta_secondary: { label: "Get in Touch", url: "/about/#contact" }
+  cta_secondary: { label: "About",        url: "/about/" }
 
 # Random work stream - picks `count` items at random (per page load) from the
 # listed `types`. To add a new type: add it here, add a {% when %} branch in
@@ -30,10 +30,10 @@ stream:
     all_articles: "View all articles"
 
 cta:
-  kicker: "LET’S TALK"
-  heading: "Have a project that needs to feel <em>just right</em>?"
+  kicker: "OPEN SOURCE"
+  heading: "Want a site that feels <em>just right</em>?"
   primary:   { label: "View Work",    url: "/portfolio/" }
-  secondary: { label: "Get in touch", url: "/about/#contact" }
+  secondary: { label: "Source", url: "https://github.com/Nuo27/phosphor-site" }
 ---
 
 <!-- Content-driven page. Body is intentionally empty; _layouts/home.html composes the sections. -->
