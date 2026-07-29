@@ -606,7 +606,8 @@
     var lines = el.querySelectorAll('.line');
     for (var i = 0; i < lines.length; i++) {
       var inner = lines[i].querySelector('.line-inner');
-      if (inner && inner.scrollWidth > lines[i].clientWidth + 1) return true;
+      // 8px safety slack so sub-pixel/font-rendering variance never re-clips.
+      if (inner && inner.scrollWidth > lines[i].clientWidth - 8) return true;
     }
     return false;
   }

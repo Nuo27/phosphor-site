@@ -33,7 +33,7 @@
   <!-- Cursor controller — external script, synchronous (pre-paint, same as theme.js).
        style.css (render-blocking <link> below) applies cursor:none from frame 1;
        router.js keeps the shell alive across nav, so this runs once per tab. -->
-  <script src="{{ "/assets/js/cursor.js" | relative_url }}"></script>
+  <script src="{{ "/assets/js/cursor.js" | relative_url }}?v={{ site.time | date: "%Y%m%d%H%M" }}"></script>
 
   <link rel="icon" type="image/svg+xml" href="{{ '/assets/image/logo/phosphor-icon.svg' | relative_url }}">
   <link rel="alternate icon" href="{{ '/assets/favicon.ico' | relative_url }}">
@@ -43,7 +43,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
   <!-- Theme style (sets data-theme before paint) -->
-  <script src="{{ '/assets/js/theme.js' | relative_url }}"></script>
+  <script src="{{ '/assets/js/theme.js' | relative_url }}?v={{ site.time | date: "%Y%m%d%H%M" }}"></script>
 
   <!-- Type system: Fraunces (editorial serif) + Space Grotesk (display) + Inter (body) + JetBrains Mono (data) -->
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,400;1,9..144,500&family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap">
@@ -55,6 +55,6 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css">
 
   <!-- Custom CSS -->
-  <link rel="stylesheet" href="{{ '/assets/css/style.css' | relative_url }}">
+  <link rel="stylesheet" href="{{ '/assets/css/style.css' | relative_url }}?v={{ site.time | date: "%Y%m%d%H%M" }}">
 
 </head>
