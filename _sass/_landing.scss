@@ -112,9 +112,10 @@
   .line-inner {
     display: inline-block;
     position: relative;
+    white-space: nowrap;
     transform: translateY(110%);
     filter: blur(12px);
-    animation: reveal-line 1.1s $ease-out-expo 0.35s forwards;
+    animation: reveal-line 1.1s $ease-out-expo calc(0.35s + var(--line-i, 0) * 0.1s) forwards;
   }
 }
 [data-glitch].glitching .line-inner {

@@ -12,8 +12,14 @@
           <span class="crosshair">+</span> {{ page.hero.eyebrow }}
         </p>
 
+        {%- comment -%} wordmark: optional hero.wordmark overrides site.title; use "|"
+          to force a line break (e.g. "Nuo|Chen"). Each segment is one .line.
+          JS (fitCoverWordmark) auto-shrinks font-size so it never clips. {%- endcomment -%}
+        {%- assign wm_lines = page.hero.wordmark | default: site.title | split: '|' -%}
         <h1 class="cover-wordmark" data-glitch>
-          <span class="line"><span class="line-inner">{{ site.title }}</span></span>
+          {%- for wm_line in wm_lines -%}
+          <span class="line" style="--line-i: {{ forloop.index0 }}"><span class="line-inner">{{ wm_line | strip }}</span></span>
+          {%- endfor -%}
         </h1>
 
         <p class="cover-deck" data-reveal>{{ site.description }}</p>

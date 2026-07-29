@@ -594,6 +594,50 @@
     scope.querySelectorAll('.hero-title').forEach(splitHeroTitle);
   }
 
+  // ============================================================
+  // Home cover wordmark — auto-fit font-size so any title length
+  // (one segment per .line; multi-line via hero.wordmark "|" split)
+  // fits its column instead of being clipped by .line { overflow:hidden }.
+  // Resets to the CSS clamp value, then steps down 4px until no .line-inner
+  // overflows its .line. Re-runs after fonts load and on resize.
+  // ============================================================
+  var WM_MIN_PX = 40;
+  function wordmarkOverflows(el) {
+    var lines = el.querySelectorAll('.line');
+    for (var i = 0; i < lines.length; i++) {
+      var inner = lines[i].querySelector('.line-inner');
+      if (inner && inner.scrollWidth > lines[i].clientWidth + 1) return true;
+    }
+    return false;
+  }
+  function fitWordmark(el) {
+    el.style.fontSize = ''; // reset to CSS clamp, shrink only if overflowing
+    var fs = parseFloat(getComputedStyle(el).fontSize);
+    var guard = 0;
+    while (fs > WM_MIN_PX && wordmarkOverflows(el) && guard++ < 120) {
+      fs -= 4;
+      el.style.fontSize = fs + 'px';
+    }
+  }
+  function fitCoverWordmark(scope) {
+    var wm = scope.querySelector && scope.querySelector('.cover-wordmark');
+    if (!wm) return;
+    fitWordmark(wm);
+    if (document.fonts && document.fonts.ready) {
+      document.fonts.ready.then(function () { if (wm.isConnected) fitWordmark(wm); });
+    }
+    runOnce('coverWordmarkResize', function () {
+      var raf = 0;
+      window.addEventListener('resize', function () {
+        cancelAnimationFrame(raf);
+        raf = requestAnimationFrame(function () {
+          var live = document.querySelector('.cover-wordmark');
+          if (live) fitWordmark(live);
+        });
+      }, { passive: true });
+    });
+  }
+
   // Adds data-reveal to .project-body / .article-body > * with a staggered delay.
   // Reuses the site-wide reveal observer; no new IntersectionObserver.
   function initProjectBodyReveal(scope) {
@@ -1158,6 +1202,7 @@
 
     // Per navigation
     initHeroAurora(scope);
+    fitCoverWordmark(scope);
     initProjectHero(scope);
     initProjectBodyReveal(scope);
     initRandomWork(scope);
