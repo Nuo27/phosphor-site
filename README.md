@@ -28,7 +28,7 @@
 3. **Edit `_config.yml`** — `title`, `description`, `url`, `repository`, `author`, and `social` block. Set `url` to your deployed origin (e.g. `https://USERNAME.github.io`) — the RSS feed, sitemap, and social-preview cards all depend on it.
 4. **Set your portrait** — point `author.image` in `_config.yml` at your photo (800×800 recommended).
 5. **Enable Pages** — repo Settings → Pages → Source: **GitHub Actions**.
-6. **Push to `dev`** — the workflow builds and deploys.
+6. **Push to `main`** — the workflow builds and deploys.
 
 Local preview:
 

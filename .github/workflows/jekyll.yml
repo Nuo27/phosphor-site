@@ -2,7 +2,7 @@ name: Build and Deploy
 
 on:
   push:
-    branches: [dev]
+    branches: [main]
   schedule:
     - cron: '*/10 * * * *'   # only fires for Notion users (see if below)
   workflow_dispatch:
