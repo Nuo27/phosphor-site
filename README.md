@@ -98,7 +98,7 @@ The custom cursor is this template's signature interaction. Three files own it:
 | [`assets/js/cursor.js`](assets/js/cursor.js) | Renderer IIFE — rAF loop, smoothing, trail, tilt, scrollbar-drag tracking |
 | [`assets/js/main.js`](assets/js/main.js) §CURSOR | Hover resolver — `.is-hover`/`.is-traced` on cards, `setStates({down,drag,zoom,…})` |
 
-It auto-disables on `(hover: none), (pointer: coarse)` and `prefers-reduced-motion: reduce`. See [`plan.md`](plan.md) §5 for the full architecture reference, including why scrollbar-drag tracking is delta-based.
+It auto-disables on `(hover: none), (pointer: coarse)` and `prefers-reduced-motion: reduce`.
 
 ## Notion CMS (optional)
 
