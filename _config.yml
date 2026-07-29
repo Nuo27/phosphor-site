@@ -7,6 +7,18 @@ baseurl             : ""
 repository          : your-username/phosphor-site
 
 
+### Navigation ###
+# Top navbar links, in display order. `label` is the visible text; `url` is the
+# destination. Active state is automatic: the root entry matches only on `/`,
+# every other entry is active on an exact match OR any sub-path (so `/portfolio/`
+# also lights up on `/portfolio/<project>/`). Omit `label` to fall back to the
+# target page's `title`.
+nav:
+  - { label: About,     url: /about/ }
+  - { label: Portfolio, url: /portfolio/ }
+  - { label: Articles,  url: /articles/ }
+
+
 ### Author Info ###
 author:
   name              : Your Name

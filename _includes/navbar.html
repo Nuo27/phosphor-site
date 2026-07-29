@@ -4,9 +4,9 @@
 
   <div class="navbar-collapse" id="navbarNavAltMarkup">
     <div class="navbar-nav ml-auto">
-      <a class="nav-item nav-link {% if page.url == '/about.html' or page.url == '/about/' %}active{% endif %}" href="/about/">About</a>
-      <a class="nav-item nav-link {% if page.url == '/portfolio/' or page.url contains '/portfolio/' %}active{% endif %}" href="/portfolio/">Portfolio</a>
-      <a class="nav-item nav-link {% if page.url == '/articles/' or page.url contains '/articles/' %}active{% endif %}" href="/articles/">Articles</a>
+      {% for item in site.nav %}
+      <a class="nav-item nav-link {% if item.url == '/' %}{% if page.url == '/' %}active{% endif %}{% else %}{% if page.url == item.url or page.url contains item.url %}active{% endif %}{% endif %}" href="{{ item.url | prepend: site.baseurl }}">{{ item.label }}</a>
+      {% endfor %}
     </div>
   </div>
 
