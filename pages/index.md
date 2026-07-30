@@ -5,14 +5,14 @@ permalink: /
 hero:
   eyebrow: "JEKYLL TEMPLATE · TACTICAL TELEMETRY"
   skills: [Jekyll, SCSS, Vanilla JS]
-  cta_primary:   { label: "View Work",    url: "/portfolio/" }
-  cta_secondary: { label: "About",        url: "/about/" }
+  cta_primary: { label: "View Work", url: "/portfolio/" }
+  cta_secondary: { label: "About", url: "/about/" }
 
 # Random work stream - picks `count` items at random (per page load) from the
 # listed `types`. To add a new type: add it here, add a {% when %} branch in
 # _includes/landing/stream.html, and add _includes/stream/<type>-card.html.
-# `hide` excludes matching items from the random pool (falls back to the
-# site-wide portfolio.hidden_* in _config.yml).
+# `hide.tags` excludes items whose tags contain any entry; `hide.category`
+# excludes items whose category field matches (single value).
 random_work:
   types: [project, article]
   count: 3
@@ -32,7 +32,7 @@ stream:
 cta:
   kicker: "OPEN SOURCE"
   heading: "Want a site that feels <em>just right</em>?"
-  primary:   { label: "View Work",    url: "/portfolio/" }
+  primary: { label: "View Work", url: "/portfolio/" }
   secondary: { label: "Source", url: "https://github.com/Nuo27/phosphor-site" }
 ---
 
