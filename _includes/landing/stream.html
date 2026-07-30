@@ -14,7 +14,7 @@
 
     <div class="stream" data-random-work data-count="{{ rw.count | default: 3 }}">
 
-      {% comment %} Exclude items matching random_work.hide (tags/categories).
+      {% comment %} Exclude items matching random_work.hide (tags list / categories list).
             Falls back to the site-wide portfolio.hidden_* so anything suppressed
             on the portfolio stays out of the home stream too. {% endcomment %}
       {% assign hide_tags = rw.hide.tags | default: site.portfolio.hidden_tags %}
@@ -37,9 +37,10 @@
             {% endfor %}
           {% when 'article' %}
             {% for a in site.articles %}
-              {%- if a.nested %}{% continue %}{% endif -%}
+              {%- if a.nested %}{% continue -%}{% endif -%}
               {%- assign skip = false -%}
               {%- for ht in hide_tags -%}{%- if a.tags contains ht -%}{%- assign skip = true -%}{%- break -%}{%- endif -%}{%- endfor -%}
+              {%- if hide_cats contains a.category -%}{%- assign skip = true -%}{%- endif -%}
               {%- unless skip -%}
                 {% include stream/article-card.html article=a index=forloop.index labels=labels pool=true %}
               {%- endunless -%}
