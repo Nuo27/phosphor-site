@@ -32,13 +32,18 @@
   }
 }
 
-// Editorial swipe underline — the site's ONE underline system.
-// Shared by card titles (.card-title-link) and markdown body links
-// (.markdown-body a). The swipe fires when the resolver writes
-// `.is-hover` to the element (NOT on CSS `:hover`) so the resolver
-// stays the single source of truth for interaction state across
-// native scroll, smooth scroll, and router transitions.
-@mixin editorial-underline {
+// Editorial underline system — the site's ONE link-hover family, two
+// context variants. Both fire when the resolver writes `.is-hover` to the
+// element (NOT on CSS `:hover` alone) so the resolver stays the single
+// source of truth for interaction state across native scroll, smooth
+// scroll, and router transitions.
+//
+//   · link-underline-lock  — body copy (.markdown-body a): a 1px rule
+//     expands from the centre outward and energises a phosphor bloom.
+//   · link-underline-frame — card titles (.card-title-link): top + bottom
+//     hairlines sweep in from opposing edges, bracketing the title like
+//     the navbar's [ ] motif.
+@mixin link-underline-lock {
   text-decoration: none;
   position: relative;
   display: inline-block;
@@ -50,12 +55,48 @@
     width: 100%; height: 1px;
     background: currentColor;
     transform: scaleX(0);
-    transform-origin: left;
-    transition: transform 0.3s $ease-out-expo;
+    transform-origin: center;                 // centre-out, not left-to-right
+    box-shadow: 0 0 0 currentColor;           // no glow at rest
+    transition: transform  0.32s $ease-out-expo,
+                box-shadow 0.32s $ease-out-expo;
   }
   &.is-hover::after,
   &:hover::after,
-  &:focus-visible::after { transform: scaleX(1); }
+  &:focus-visible::after {
+    transform: scaleX(1);
+    box-shadow: 0 0 6px currentColor;         // phosphor energises
+  }
+}
+
+@mixin link-underline-frame {
+  text-decoration: none;
+  position: relative;
+  display: inline-block;
+  transition: color 0.4s $ease-out-expo;
+  // Bottom rule sweeps left → right.
+  &::after {
+    content: "";
+    position: absolute;
+    left: 0; bottom: 0;
+    width: 100%; height: 1px;
+    background: currentColor;
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.36s $ease-out-expo;
+  }
+  // Top rule sweeps right → left (mirrors the bottom → the frame closes).
+  &::before {
+    content: "";
+    position: absolute;
+    left: 0; top: 0;
+    width: 100%; height: 1px;
+    background: currentColor;
+    transform: scaleX(0);
+    transform-origin: right;
+    transition: transform 0.36s $ease-out-expo 0.05s;   // slight stagger
+  }
+  &.is-hover::after,  &:hover::after,  &:focus-visible::after  { transform: scaleX(1); }
+  &.is-hover::before, &:hover::before, &:focus-visible::before { transform: scaleX(1); }
 }
 
 // ---- Chip substrate — the site's ONE tag/skill chip base. ----

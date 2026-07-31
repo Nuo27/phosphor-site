@@ -26,29 +26,116 @@
   small .fa-heart { color: $hazard; }
   small .fa-code { color: $phosphor; [data-theme="light"] & { color: $print-phosphor; } }
   small .fa-map-marker-alt { color: $cyan; [data-theme="light"] & { color: $print-cyan; } }
+
+  // Shift the right-aligned social column clear of the fixed back-to-top
+  // button (bottom-right) on desktop so they never overlap. Mobile uses a
+  // centered social row that already clears the button.
+  @media (min-width: 768px) {
+    .footer-social { padding-right: 72px; }
+  }
 }
 
-// Social icons — terminal chip style. Hover driven by the resolver's
-// `.is-hover` class (the resolver finds `.social` via HOVER_SEL).
-// All colours via CSS variables (theme-aware via _tokens.scss).
+// Social icons — chip substrate + morph-to-circle hover. Hover is driven by
+// the resolver's `.is-hover` AND native `:hover` (the custom cursor keys off
+// `:has(.social:hover)`). Default state mirrors the tag/skill chip tokens.
+//
+// Jitter note: the morph-to-circle lives on a `::before` overlay with
+// `pointer-events: none`; the anchor's own border-radius stays stable, so the
+// hit region never changes shape under the cursor (no corner oscillation).
+// --brand is set per-entry via inline style in _includes/social.html.
 .social {
+  position: relative;
   text-decoration: none !important;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   width: 38px;
   height: 38px;
-  border-radius: $radius-xs !important;
-  border: 1px solid color-mix(in srgb, var(--ink) 14%, transparent);
-  background: var(--bg-surface);
-  transition: transform    $dur-base    $ease-out-back,
-              border-color $dur-lightup $ease-out-expo,
-              background   $dur-lightup $ease-out-expo,
-              color        $dur-lightup $ease-out-expo,
-              box-shadow   $dur-lightup $ease-out-expo;
+  border-radius: $radius-xs !important;            // stable — never animated
+  border: 1px solid rgba($phosphor-soft, 0.24);    // chip substrate
+  background: rgba($phosphor-soft, 0.07);
+  color: var(--ink-mut);
+  transition: border-color $dur-lightup $ease-out-expo,
+              background   $dur-lightup $ease-out-expo;
+  [data-theme="light"] & {
+    background: rgba($carbon, 0.04);
+    border-color: rgba($carbon, 0.18);
+    color: rgba($carbon, 0.80);
+  }
 
-  @include icon-hover;
+  // Pure visual morph layer. pointer-events:none → the anchor's square is
+  // the sole hit region; morphing the circle can't shed the cursor.
+  &::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: $radius-xs;
+    background: transparent;
+    pointer-events: none;
+    transition: border-radius $dur-base  $ease-out-back,
+                background   $dur-lightup $ease-out-expo,
+                box-shadow   $dur-lightup $ease-out-expo;
+  }
+
+  // Hover: square hairline fades out; ::before becomes the brand circle.
+  // No positional lift — moving the box under a static cursor also jitters.
+  &.is-hover, &:hover {
+    background: transparent;
+    border-color: transparent;
+    &::before {
+      border-radius: 50%;
+      background: var(--brand);
+      box-shadow: 0 0 24px color-mix(in srgb, var(--brand) 40%, transparent);
+    }
+    & > i { color: #fff; }                         // white glyph = platform lockup
+  }
+
+  & > i { position: relative; z-index: 1; transition: color $dur-lightup $ease-out-expo; }
+
   @include focus-ring(20px, 34%);
+}
+
+// Platform label — fades and floats DOWN on hover, tight 4px gap. Absolute
+// so it never disturbs the icon row. Same direction in contact and footer.
+.social-label {
+  position: absolute;
+  left: 50%;
+  top: 100%;
+  font-family: $font-mono;
+  font-size: 0.62rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: var(--ink-mut);
+  opacity: 0;
+  pointer-events: none;
+  transform: translate(-50%, -4px);
+  transition: opacity 0.4s $ease-out-expo,
+              transform 0.45s $ease-out-back;
+}
+.social:hover .social-label,
+.social.is-hover .social-label {
+  opacity: 1;
+  transform: translate(-50%, 4px);
+}
+
+// Reduced motion — keep the brand-colour circle (static end state), kill the
+// morph animation, bloom and label. Matches the site's reduce pattern.
+@media (prefers-reduced-motion: reduce) {
+  .social,
+  .social::before,
+  .social-label { transition: none !important; }
+  .social:hover,
+  .social.is-hover {
+    border-color: transparent;
+    &::before {
+      border-radius: 50%;
+      background: var(--brand);
+      box-shadow: none;
+    }
+    & > i { color: #fff; }
+  }
+  .social-label { display: none !important; }
 }
 
 // Back to top — HUD button. Hover driven by `.is-hover` (the resolver

@@ -30,6 +30,7 @@ social:
     icon: github
     prefix: fab
     url: "https://github.com/Nuo27/phosphor-site"
+    brand: "#30363d"
 
 ### Collections ###
 collections:

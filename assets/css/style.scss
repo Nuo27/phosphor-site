@@ -10,7 +10,7 @@
 @use "base";       // substrate, typography, CRT overlay, scrollbar, blink
 @use "cursor";     // custom cursor controller (triangle + invert ring)
 @use "markdown";   // rendered markdown body (shared prose source)
-@use "mixins";     // themed(), editorial-underline(), chip() (each consumer @use's it)
+@use "mixins";     // themed(), link-underline-lock/frame(), chip() (each consumer @use's it)
 @use "cards";      // shared editorial card-title interaction
 @use "navbar";     // HUD command bar
 @use "landing";    // cinematic hero + content stream + buttons + reveal
