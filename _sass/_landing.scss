@@ -735,8 +735,8 @@
   .reveal-left,
   .reveal-right,
   [data-reveal] {
-    opacity: 0;
-    transition: opacity $dur-cine $ease-out-expo, transform $dur-cine $ease-out-expo;
+    filter: blur(10px);
+    transition: filter $dur-cine $ease-out-expo, transform $dur-cine $ease-out-expo;
   }
   .reveal        { transform: translateY(28px); }
   .reveal-left   { transform: translateX(-32px); }
@@ -746,11 +746,11 @@
   .reveal.visible,
   .reveal-left.visible,
   .reveal-right.visible {
-    opacity: 1;
+    filter: blur(0);
     transform: translate(0, 0);
   }
   [data-reveal].is-visible {
-    opacity: 1;
+    filter: blur(0);
     transform: translateY(0);
   }
 }
@@ -768,6 +768,10 @@
     animation: none !important;
   }
   .cover-wordmark .line-inner { filter: none; transform: none; }
+  .js-reveal-ready .reveal,
+  .js-reveal-ready .reveal-left,
+  .js-reveal-ready .reveal-right,
+  .js-reveal-ready [data-reveal] { filter: none !important; transform: none !important; }
   // Ambient chips keep a static backlight (no movement) so they still read as "lit".
   .cover-tags .tag-chip {
     animation: none !important;
