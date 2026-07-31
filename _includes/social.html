@@ -1,7 +1,9 @@
 <div class="container-fluid justify-content-center">
   {% for s in site.social %}
-    <a class="social mx-1" href="{{ s.url }}" title="{{ s.name }}">
+    <a class="social mx-1" href="{{ s.url }}" title="{{ s.name }}"
+       style="--brand: {{ s.brand | default: '#2BE4FF' }}">
       <i class="{{ s.prefix | default: 'fas' }} fa-{{ s.icon }} fa-1x"></i>
+      <span class="social-label">{{ s.name }}</span>
     </a>
   {% endfor %}
 </div>

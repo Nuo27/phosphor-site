@@ -1,9 +1,8 @@
 // ==========================================================
-// Content cards + shared link system — the site's ONE underline.
-// The editorial swipe lives in _mixins.scss (@mixin editorial-underline)
-// and is reused by .card-title-link (card titles) and .markdown-body a
-// (article/project body links), so the implementation cannot drift back
-// into page-specific code.
+// Content cards + shared link system — the site's underline family.
+// Two context variants live in _mixins.scss (link-underline-frame for
+// card titles, link-underline-lock for markdown body links) so the
+// implementation cannot drift back into page-specific code.
 // ==========================================================
 
 @use "variables" as *;
@@ -21,12 +20,13 @@ a:hover { text-decoration: none; }
 // interaction (lift / border / shadow / image). Portfolio cards have no
 // title link (plain text), so they are naturally decoupled.
 .card-title-link {
-  @include editorial-underline;
+  @include link-underline-frame;
   color: inherit;
   &.is-hover, &:hover { color: var(--card-accent, #{$phosphor}); }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .card-title-link,
+  .card-title-link::before,
   .card-title-link::after { transition-duration: 0.01ms !important; }
 }

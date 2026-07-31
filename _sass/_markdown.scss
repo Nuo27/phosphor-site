@@ -104,11 +104,15 @@
     background: color-mix(in srgb, var(--phosphor-soft) 40%, transparent);
   }
 
-  // ---- Links: cyan base + the site's ONE editorial underline swipe ----
+  // ---- Links: cyan base + centre-out phosphor lock (link-underline-lock) ----
   a:not(.btn):not([class^="carousel-"]):not([class^="list-"]):not(.no-underline):not(.tag-chip) {
-    @include editorial-underline;
+    @include link-underline-lock;
     color: var(--cyan);
     &.is-hover, &:hover { color: var(--phosphor); }
+    @media (prefers-reduced-motion: reduce) {
+      &,
+      &::after { transition-duration: 0.01ms !important; }
+    }
   }
 
   // ---- Lists ----
