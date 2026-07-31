@@ -191,6 +191,11 @@
     to right, black 0%, black 55%, transparent 100%
   );
   pointer-events: none;
+}
+// Panel fade gated on .is-visible (.hero-title is a [data-reveal] target) so
+// the frost re-animates on scroll-back. --panel-strength resets to its 0%
+// initial-value when the animation drops, then re-grows on re-entry.
+.hero-title.is-visible::before {
   animation: hero-panel 1.6s var(--ease-out-expo) 0.4s forwards;
 }
 

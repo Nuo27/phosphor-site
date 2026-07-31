@@ -549,18 +549,32 @@
     title.dataset.split = '1';
   }
 
-  function typeHeroKicker(kicker) {
-    if (!kicker || kicker.dataset.typed === 'done') return;
-    if (kicker.dataset.typed === '1') return; // already running
-    if (reduceMotion) {
-      kicker.dataset.typed = 'done';
-      return;
+  function resetTyper(kicker) {
+    if (kicker._typerTimer) { clearTimeout(kicker._typerTimer); kicker._typerTimer = null; }
+    var textEl = kicker.querySelector('.kicker-text');
+    var typer = kicker.querySelector('.typer');
+    var caret = kicker.querySelector('.typer-caret');
+    if (typer) typer.remove();
+    if (caret) caret.remove();
+    if (textEl) {
+      if (kicker._typerFull != null) textEl.textContent = kicker._typerFull;
+      delete textEl.dataset.typer;
     }
+    kicker.dataset.typed = '';
+  }
+
+  function typeHeroKicker(kicker) {
+    if (!kicker) return;
+    if (reduceMotion) { kicker.dataset.typed = 'done'; return; }
+    if (kicker.dataset.typed === '1') return;                 // already running
+    if (kicker.dataset.typed === 'done') resetTyper(kicker);  // replay on re-entry
     var textEl = kicker.querySelector('.kicker-text');
     if (!textEl || textEl.dataset.typer === '1') return;
-    textEl.dataset.typer = '1';
     var full = textEl.textContent;
+    if (!full) return;
+    kicker._typerFull = full;
     textEl.textContent = '';
+    textEl.dataset.typer = '1';
 
     var typer = document.createElement('span');
     typer.className = 'typer';
@@ -590,7 +604,16 @@
   function initProjectHero(scope) {
     if (!scope.querySelector || !scope.querySelector('.project-detail')) return;
     var kicker = scope.querySelector('.hero-kicker');
-    if (kicker) typeHeroKicker(kicker);
+    if (kicker) {
+      typeHeroKicker(kicker);
+      // Replay the typewriter each time the hero scrolls back into view.
+      if (!reduceMotion && 'IntersectionObserver' in window) {
+        var typerObs = trackObserver(scope, new IntersectionObserver(function (entries) {
+          entries.forEach(function (e) { if (e.isIntersecting) typeHeroKicker(kicker); });
+        }, { threshold: 0.5 }));
+        typerObs.observe(kicker);
+      }
+    }
     scope.querySelectorAll('.hero-title').forEach(splitHeroTitle);
   }
 
@@ -719,14 +742,24 @@
     if (reduceMotion) return;
     var el = scope.querySelector('[data-glitch]');
     if (!el) return;
-    // Signature chromatic-aberration burst — fires ONCE on load as a boot
-    // flourish, then retires so it never distracts from the work on repeat
-    // visits. (The resolver's is-hover path still lights the wordmark.)
+    // Boot flourish — full chromatic burst once on load.
     setTimeout(function () {
       if (!el.isConnected) return;
       el.classList.add('glitching');
       setTimeout(function () { el.classList.remove('glitching'); }, 320);
     }, 2800);
+    // Ambient soft glitch — recurring at a randomized 6-12s cadence so it
+    // never reads as metronomic. Only fires while the wordmark is in view;
+    // self-stops once the element detaches on a route change.
+    function fireSoft() {
+      if (!el.isConnected) return;
+      if (el.classList.contains('is-visible')) {
+        el.classList.add('glitching-soft');
+        setTimeout(function () { el.classList.remove('glitching-soft'); }, 500);
+      }
+      setTimeout(fireSoft, 6000 + Math.random() * 6000);
+    }
+    setTimeout(fireSoft, 9000 + Math.random() * 3000);
   }
 
   // Cover-portrait parallax — binds once. After swap the captured
@@ -765,11 +798,36 @@
     var hero = scope.querySelector('.landing-wrapper');
     if (!hero) return;
     heroScrollBound = true;
+    // Wordmark reveal is driven here, not by the IntersectionObserver — the
+    // hero parallax transform distorts the observer's geometry judgement so
+    // it never reliably fires isIntersecting:false for the centred title.
+    // This consumer is the same one the parallax uses, so equally reliable.
+    var wm = hero.querySelector('.cover-wordmark');
+    var armed = false;
+    if (wm && !reduceMotion) {
+      // Reveal next frame, after .js-reveal-ready paints the hidden state.
+      requestAnimationFrame(function () { wm.classList.add('is-visible'); });
+    }
     addScrollConsumer(function (pos) {
       // hero is a child of <main> (router-swapped). Bail once it's gone
       // so we don't keep writing to a detached node across navigations.
       if (!hero.isConnected) return;
       var vh = window.innerHeight;
+      // Replay the wordmark entrance when returning to the top after having
+      // scrolled past the hero. Stays visible while scrolling (no mid-scroll
+      // snap) — only re-animates on a deliberate return.
+      if (wm && !reduceMotion) {
+        if (pos > vh) armed = true;
+        if (armed && pos < 50) {
+          var lines = wm.querySelectorAll('.line-inner');
+          lines.forEach(function (el) { el.style.transition = 'none'; });
+          wm.classList.remove('is-visible');
+          void wm.offsetWidth;  // reflow: apply hidden state without painting
+          lines.forEach(function (el) { el.style.transition = ''; });
+          wm.classList.add('is-visible');
+          armed = false;
+        }
+      }
       if (pos >= vh) return;
       var pp = Math.min(pos / vh, 1);
       hero.style.opacity = String(1 - pp * 0.55);

@@ -113,10 +113,20 @@
     display: inline-block;
     position: relative;
     white-space: nowrap;
-    transform: translateY(110%);
-    filter: blur(12px);
-    animation: reveal-line 1.1s $ease-out-expo calc(0.35s + var(--line-i, 0) * 0.1s) forwards;
   }
+}
+// Per-line mask reveal — gated on .is-visible (driven by initHeroScroll's
+// scroll consumer). Hidden initial state under .js-reveal-ready keeps the
+// no-JS fallback visible. Replays when scrolling back to the top.
+.js-reveal-ready .cover-wordmark .line-inner {
+  transform: translateY(110%);
+  filter: blur(12px);
+  transition: transform 1.1s $ease-out-expo, filter 1.1s $ease-out-expo;
+  transition-delay: calc(0.35s + var(--line-i, 0) * 0.1s);
+}
+.js-reveal-ready .cover-wordmark.is-visible .line-inner {
+  transform: translateY(0);
+  filter: blur(0);
 }
 [data-glitch].glitching .line-inner {
   animation: glitch-shift 0.32s steps(2) 2;
@@ -132,7 +142,20 @@
   75%  { transform: translate(-1px, -1px); }
   100% { transform: translate(0, 0); }
 }
-@keyframes reveal-line { to { transform: translateY(0); filter: blur(0); } }
+// Ambient soft glitch — recurring (driven by initGlitch), subtler than the
+// boot burst: 1px jitter + desaturated chromatic edge. Keeps the wordmark
+// alive without distracting. The reduce block's .cover-wordmark .line-inner
+// { animation: none !important } covers this variant too.
+@keyframes glitch-soft {
+  0%, 100% { transform: translate(0, 0); }
+  25%      { transform: translate(-1px, 0); }
+  50%      { transform: translate(1px, 0); }
+  75%      { transform: translate(-1px, 0); }
+}
+[data-glitch].glitching-soft .line-inner {
+  animation: glitch-soft 0.5s steps(2) 1;
+  text-shadow: -1px 0 rgba($hazard, 0.55), 1px 0 rgba($cyan, 0.55);
+}
 
 // Serif editorial deck — site.description in Fraunces
 .cover-deck {
